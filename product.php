@@ -1,8 +1,17 @@
 <?php
 require_once 'db_connect.php';
-
-// Fetch products with category names
-$sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name
+// Fetch only active products (hide inactive)
+$sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name, p.status
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.status = 'active'  -- only active products
+        ORDER BY p.product_id DESC";
+$result = $conn->query($sql);
+if (!$result) {
+    die("Query failed: " . $conn->error);
+}
+// Fetch products with category names and status
+$sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name, p.status
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         ORDER BY p.product_id DESC";
@@ -136,12 +145,26 @@ header h1 {
     color: white;
 }
 .btn-add:hover { background-color: #0b5ed7; }
+.btn-toggle {
+    font-size: 0.75rem;
+}
 
+/* No products message */
 .no-products {
     text-align: center;
     font-size: 1.1rem;
     color: #6c757d;
     margin: 20px 0;
+}
+
+/* Status badges */
+.badge-active {
+    background-color: #198754;
+    color: #fff;
+}
+.badge-inactive {
+    background-color: #6c757d;
+    color: #fff;
 }
 
 /* Responsive */
@@ -164,13 +187,10 @@ body::-webkit-scrollbar {
 <body>
 
 <header>
-    <!-- Left: Title -->
     <h1>☕ Product Menu</h1>
 
-    <!-- Right: Search + Buttons -->
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <div class="search-container">
-            
             <input type="text" id="searchBox" placeholder="Search products..."><i class="bi bi-search"></i>
         </div>
         <div class="nav-buttons d-flex gap-1">
@@ -196,6 +216,7 @@ body::-webkit-scrollbar {
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Price ($)</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -207,10 +228,18 @@ body::-webkit-scrollbar {
                                 <td><?= htmlspecialchars($row['category_name'] ?? 'No Category'); ?></td>
                                 <td>$<?= number_format($row['price'], 2); ?></td>
                                 <td>
+                                    <?php if($row['status']=='active'): ?>
+                                        <span class="badge badge-active">Active</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-inactive">Inactive</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                        <a href="edit_product.php?id=<?= $row['product_id']; ?>" class="btn btn-edit btn-sm">
+                                        <a href="update_product.php?id=<?= $row['product_id']; ?>" class="btn btn-edit btn-sm">
                                             <i class="bi bi-pencil-square"></i> Edit
                                         </a>
+                                       
                                         <a href="delete_product.php?id=<?= $row['product_id']; ?>" class="btn btn-delete btn-sm"
                                            onclick="return confirm('Are you sure you want to delete this product?')">
                                             <i class="bi bi-trash"></i> Delete

@@ -3,6 +3,22 @@ require_once 'db_connect.php';
 
 $message = "";
 
+// Fetch only active products
+$sql = "SELECT p.product_id, p.name, p.price, c.name AS category
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.status='active'
+        ORDER BY c.name, p.name";
+$result = $conn->query($sql);
+
+$products_by_category = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $category = $row['category'] ?? 'Other';
+        $products_by_category[$category][] = $row;
+    }
+}
+
 // Handle Order Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
     $order_total = isset($_POST['order_total']) ? floatval($_POST['order_total']) : 0.00;
@@ -46,6 +62,7 @@ $categories = [];
 $sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name
         FROM products p
         LEFT JOIN categories c ON p.category_id=c.id
+        WHERE p.status='active'
         ORDER BY c.name, p.name";
 $result = $conn->query($sql);
 if ($result && $result->num_rows > 0) {
@@ -76,7 +93,6 @@ h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
     display:flex; justify-content:space-between; align-items:center;
     padding:12px 20px;
     background: linear-gradient(90deg, #0d6efd, #6610f2);
-    
 }
 .header-left {
     margin: 0;
@@ -85,32 +101,19 @@ h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
     background: linear-gradient(90deg, #ffffffff, #fdd10dff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    
 }
-.header-center {
-    flex:1; text-align:center;
-    
-}
-.header-right {
-    display:flex; align-items:center; gap:10px;
-}
-
-#clock {
-    font-weight:600; color:#6c757d;
-}
-.search-input {
-    width:220px; height:36px; border-radius:8px; border:1px solid #ced4da;
-}
+#clock { font-weight:600; color:blue; }
+.search-input { width:220px; height:36px; border-radius:8px; border:1px solid #ced4da; }
 
 /* Category Bar */
-.category-bar { background:#fff; padding:8px 16px; border-top:1px solid #e0e0e0; border-bottom:1px solid #e0e0e0; }
+.category-bar { background:#fff; padding:8px 16px; border-top:1px solid #e0e0e0; border-bottom:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; }
 .category-scroll { display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 .category-scroll::-webkit-scrollbar { display:none; }
 .category-btn { border:none; padding:6px 14px; border-radius:20px; background:#e9ecef; font-weight:500; cursor:pointer; transition:0.2s; }
 .category-btn.active, .category-btn:hover { background:#0d6efd; color:#fff; }
 
 /* Menu Grid */
-.menu-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:20px; margin-top:15px; }
+.menu-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:20px; margin-top:15px; }
 .category-section { grid-column:1/-1; margin-bottom:10px; }
 .category-section h2 { background:#0d6efd; color:#fff; padding:8px 12px; border-radius:6px; font-size:1.1rem; }
 
@@ -134,46 +137,31 @@ h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
 /* Responsive */
 @media(max-width:768px){
     .header-content { flex-direction:column; align-items:flex-start; gap:8px; }
-    .header-center { text-align:left; }
-    .search-input { width:100%; }
+    .search-input { width:100%; margin-top:8px; }
 }
-/* Hide scrollbar but allow scroll */
-html, body {
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: none;
-}
-body::-webkit-scrollbar {
-    display: none;
-}
+html, body { height:100%; overflow:auto; scrollbar-width:none; }
+body::-webkit-scrollbar { display:none; }
 </style>
 </head>
 <body>
+
+<!-- Sticky Header -->
 <div class="sticky-header-wrapper">
     <div class="header-content">
-        <div class="header-left ">
+        <div class="header-left">
             <h1>Daily Grind Coffee Orders</h1>
         </div>
-         <input type="text" id="searchBox" class="form-control search-input" placeholder="Search products...">
-    </div>
-    <div class="category-bar d-flex justify-content-between align-items-center">
-    <!-- Left: Category Buttons -->
-    <div class="category-scroll d-flex align-items-center gap-2">
-        <button type="button" class="category-btn active" data-category="all">All</button>
-        <?php foreach ($categories as $cat): ?>
-            <button type="button" class="category-btn" data-category="<?= htmlspecialchars($cat) ?>">
-                <?= htmlspecialchars($cat) ?>
-            </button>
-        <?php endforeach; ?>
-    </div>
+        <input type="text" id="searchBox" class="form-control search-input" placeholder="Search products...">
 
-    <!-- Right: Clock -->
-    <div class="header-clock" id="clock"></div>
-</div>
-
-        
+    </div>
+    <div class="category-bar">
+        <div class="category-scroll">
+            <button type="button" class="category-btn active" data-category="all">All</button>
+            <?php foreach ($categories as $cat): ?>
+                <button type="button" class="category-btn" data-category="<?= htmlspecialchars($cat) ?>"><?= htmlspecialchars($cat) ?></button>
+            <?php endforeach; ?>
         </div>
-        
+        <div id="clock"></div>
     </div>
 </div>
 
@@ -186,7 +174,7 @@ body::-webkit-scrollbar {
         <div class="col-lg-8">
             <div class="menu-grid">
                 <?php foreach ($menu as $category => $items_arr): ?>
-                    <div class="category-section" id="group-<?= preg_replace('/\s+/','-', strtolower($category)) ?>">
+                    <div class="category-section" data-category="<?= strtolower($category) ?>">
                         <h2><?= htmlspecialchars($category) ?></h2>
                     </div>
                     <?php foreach ($items_arr as $item): ?>
@@ -215,12 +203,13 @@ body::-webkit-scrollbar {
 </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Clock Display
 function updateClock() {
     const now = new Date();
-    const options = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' };
-    document.getElementById('clock').textContent = now.toLocaleDateString('en-US', options);
+    const options = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+    document.querySelectorAll('#clock').forEach(el => el.textContent = now.toLocaleDateString('en-US', options));
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -253,7 +242,7 @@ function updateVisibility() {
     const searchTerm = searchBox.value.toLowerCase();
 
     categorySections.forEach(section => {
-        const catName = section.querySelector('h2').textContent.toLowerCase();
+        const catName = section.getAttribute('data-category').toLowerCase();
         const items = Array.from(itemCards).filter(card => card.getAttribute('data-category') === catName);
 
         let anyVisible = false;
@@ -274,10 +263,10 @@ catButtons.forEach(btn => {
         updateVisibility();
     });
 });
-
 searchBox.addEventListener('input', updateVisibility);
 updateVisibility();
 </script>
 </body>
 </html>
+
 <?php $conn->close(); ?>

@@ -171,6 +171,7 @@ body::-webkit-scrollbar { display: none; }
                     <th>ID</th>
                     <th>Name</th>
                     <th>Created At</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -181,6 +182,8 @@ body::-webkit-scrollbar { display: none; }
                         <td><?= $row['id'] ?></td>
                         <td><?= htmlspecialchars($row['name']) ?></td>
                         <td><?= $row['created_at'] ?? '-' ?></td>
+                        <td><?= $row['status'] ?></td>
+
                         <td>
                             <a class="btn-action edit-btn" href="edit_category.php?id=<?= $row['id'] ?>"><i class="bi bi-pencil-square"></i> Edit</a>
                             <a class="btn-action delete-btn" href="delete_category.php?id=<?= $row['id'] ?>" onclick="return confirm('Delete this category?');"><i class="bi bi-trash"></i> Delete</a>
