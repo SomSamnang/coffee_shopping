@@ -33,67 +33,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = "⚠️ Please fill all fields correctly.";
     }
 }
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Product</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <link rel="stylesheet" href="<?php echo $bootstrap_cdn; ?>">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: "Poppins", sans-serif;
-        }
-        .card {
-            border: none;
-            border-radius: 16px;
-        }
-        .card-header {
-            background: linear-gradient(90deg, #6f42c1, #0d6efd);
-            color: white;
-            text-align: center;
-            padding: 20px 10px;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-        }
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-        }
-        .form-label {
-            font-weight: 600;
-        }
-        .container {
-            max-width: 520px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Add Product</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<link rel="stylesheet" href="<?php echo $bootstrap_cdn; ?>">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: "Poppins", sans-serif;
+    }
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+    .card-header {
+        background: linear-gradient(90deg, #6f42c1, #0d6efd);
+        color: white;
+        text-align: center;
+        padding: 14px 10px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+    .btn-primary {
+        background-color: #0d6efd;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .form-control, .form-select {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    .container {
+        max-width: 400px; /* smaller form width */
+    }
+    .btn-outline-secondary {
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+    /* Hide scrollbar but allow scroll */
+html, body {
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+</style>
 </head>
 <body>
-<div class="container mt-5">
-    <div class="card shadow">
+<div class="container mt-4">
+    <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="mb-0">☕ Add New Product</h3>
+            <h4 class="mb-0">☕ Add Product</h4>
         </div>
-        <div class="card-body p-4">
-            
+        <div class="card-body p-3">
+
             <?php if($message): ?>
-                <div class="alert alert-info"><?= $message ?></div>
+                <div class="alert alert-info py-1"><?= $message ?></div>
             <?php endif; ?>
 
             <form method="POST">
-                <div class="mb-3">
+                <div class="mb-2">
                     <label class="form-label">Product Name *</label>
-                    <input type="text" name="name" class="form-control" placeholder="Please write here..." required>
+                    <input type="text" name="name" class="form-control" placeholder="Product name" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-2">
                     <label class="form-label">Category *</label>
                     <select name="category_id" class="form-select" required>
                         <option value="">-- Select Category --</option>
@@ -105,16 +123,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-2">
                     <label class="form-label">Price (USD) *</label>
                     <input type="number" name="price" step="0.01" min="0" class="form-control" placeholder="0.00" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2">Submit</button>
-                <a href="index.php" class="btn btn-outline-secondary w-100 mt-3 py-2">Back</a>
+                <button type="submit" class="btn btn-primary w-100 py-1">Submit</button>
+                <a href="index.php" class="btn btn-outline-secondary w-100 mt-2 py-1">Back</a>
             </form>
         </div>
     </div>
 </div>
 </body>
 </html>
+

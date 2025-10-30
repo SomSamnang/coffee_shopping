@@ -25,8 +25,6 @@ if ($order_id > 0) {
     }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,6 +93,15 @@ body {
 @media print {
     .no-print { display: none; }
 }
+/* Hide scrollbar but allow scroll */
+html, body {
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -153,12 +160,9 @@ body {
     <p class="mb-0">We hope to see you again ☕</p>
     </div>
 </div>
-
-
 <?php else: ?>
 <div class="alert alert-danger text-center">❌ Invoice not found.</div>
 <?php endif; ?>
-
 </body>
 </html>
 <?php $conn->close(); ?>
