@@ -40,7 +40,7 @@ body {
 header {
     background: linear-gradient(90deg, #0d6efd, #6610f2);
     color: white;
-    padding: 15px 20px;
+    padding:9px 18px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -167,12 +167,7 @@ header h1 {
     color: #fff;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    header { flex-direction: column; align-items: flex-start; }
-    .search-container { width: 100%; max-width: 100%; margin-bottom: 8px; }
-    .nav-buttons { width: 100%; display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
-}
+
 /* Hide scrollbar but allow scroll */
 html, body {
     height: 100%;
@@ -182,12 +177,18 @@ html, body {
 body::-webkit-scrollbar {
     display: none;
 }
+
+@media (max-width:768px) {
+  .product-card { padding:15px; }
+  .category-nav { overflow-x:auto; white-space:nowrap; padding-bottom:5px; }
+  .category-nav::-webkit-scrollbar { display:none; }
+}
 </style>
 </head>
 <body>
 
 <header>
-    <h1>☕ Product Menu</h1>
+    <h1> Product Menu</h1>
 
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <div class="search-container">
@@ -260,7 +261,7 @@ body::-webkit-scrollbar {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- 🔍 Live Search -->
+<!--  Live Search -->
 <script>
 document.getElementById("searchBox").addEventListener("keyup", function() {
     const query = this.value.toLowerCase();

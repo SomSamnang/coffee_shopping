@@ -105,12 +105,7 @@ body::-webkit-scrollbar {
 </style>
 </head>
 <body>
-<!-- Buttons Outside Invoice -->
-<div class="no-print">
-    <button onclick="window.print()" class="btn btn-primary">🖨️ Print Invoice</button>
-    <a href="orders.php" class="btn btn-secondary">New Order</a>
-    <a href="index.php" class="btn btn-outline-secondary">Back</a>
-</div>
+
 <?php if($order): ?>
 <div class="invoice-box">
     <div class="invoice-header">
@@ -157,12 +152,28 @@ body::-webkit-scrollbar {
 
     <div class="mt-4 text-center">
        <p class="mb-1">Thank you for your business!</p>
-    <p class="mb-0">We hope to see you again ☕</p>
+       <p class="mb-0">We hope to see you again ☕</p>
     </div>
 </div>
+
+<script>
+// Automatically print when page loads
+window.onload = function() {
+    window.print(); // Open print dialog
+};
+
+// After printing, redirect to orders page
+window.onafterprint = function() {
+    window.location.href = "orders.php";
+};
+
+</script>
+
 <?php else: ?>
 <div class="alert alert-danger text-center">❌ Invoice not found.</div>
+<a href="orders.php" class="btn btn-secondary mt-3">Back to Orders</a>
 <?php endif; ?>
+
 </body>
 </html>
 <?php $conn->close(); ?>

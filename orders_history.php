@@ -72,6 +72,7 @@ body {
 .navbar { 
     background: linear-gradient(90deg,#0d6efd,#6610f2); 
     box-shadow:0 3px 8px rgba(0,0,0,0.1);
+      padding:6px 18px;
 }
 .navbar-brand { font-weight:700; color:#fff; font-size:1.4rem; }
 
@@ -119,6 +120,12 @@ html, body {
 }
 body::-webkit-scrollbar {
     display: none;
+}
+
+@media (max-width:768px) {
+  .product-card { padding:15px; }
+  .category-nav { overflow-x:auto; white-space:nowrap; padding-bottom:5px; }
+  .category-nav::-webkit-scrollbar { display:none; }
 }
 </style>
 </head>

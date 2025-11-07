@@ -24,7 +24,7 @@ body {
 header {
     background: linear-gradient(90deg, #0d6efd, #6610f2);
     color: white;
-    padding: 15px 20px;
+     padding:9px 18px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -102,8 +102,15 @@ header h1 {
 .table th {
     background-color: #f4f4f4;
 }
-.table tr:nth-child(even) { background-color: #fafafa; }
 .table tr:hover { background-color: #f1f7ff; }
+
+/* Status Colors */
+.status-active { background-color:#d1e7dd; color:#0f5132; }
+.status-inactive { background-color:#f8d7da; color:#842029; }
+
+/* Status badge */
+.badge-active { background-color:#0f5132; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.85rem; }
+.badge-inactive { background-color:#842029; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.85rem; }
 
 /* Action Buttons */
 .btn-action {
@@ -178,12 +185,15 @@ body::-webkit-scrollbar { display: none; }
             <tbody>
                 <?php if($result && $result->num_rows > 0): ?>
                     <?php while($row = $result->fetch_assoc()): ?>
-                    <tr>
+                    <tr class="<?= $row['status'] === 'inactive' ? 'status-inactive' : 'status-active' ?>">
                         <td><?= $row['id'] ?></td>
                         <td><?= htmlspecialchars($row['name']) ?></td>
                         <td><?= $row['created_at'] ?? '-' ?></td>
-                        <td><?= $row['status'] ?></td>
-
+                        <td>
+                            <span class="<?= $row['status'] === 'inactive' ? 'badge-inactive' : 'badge-active' ?>">
+                                <?= ucfirst($row['status']) ?>
+                            </span>
+                        </td>
                         <td>
                             <a class="btn-action edit-btn" href="edit_category.php?id=<?= $row['id'] ?>"><i class="bi bi-pencil-square"></i> Edit</a>
                             <a class="btn-action delete-btn" href="delete_category.php?id=<?= $row['id'] ?>" onclick="return confirm('Delete this category?');"><i class="bi bi-trash"></i> Delete</a>
@@ -191,7 +201,7 @@ body::-webkit-scrollbar { display: none; }
                     </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="4">No categories found.</td></tr>
+                    <tr><td colspan="5">categories no found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

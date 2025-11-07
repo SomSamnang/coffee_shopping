@@ -79,7 +79,7 @@ if ($result && $result->num_rows > 0) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☕ Coffee Shop Orders</title>
+<title>Coffee Shop Orders</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <style>
@@ -91,7 +91,7 @@ h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
 .sticky-header-wrapper { position: sticky; top:0; z-index:1050; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
 .header-content {
     display:flex; justify-content:space-between; align-items:center;
-    padding:12px 20px;
+     padding:9px 18px;
     background: linear-gradient(90deg, #0d6efd, #6610f2);
 }
 .header-left {

@@ -4,7 +4,8 @@ include 'db_connect.php';
 $bootstrap_cdn = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"; 
 
 $message = "";
-
+// Fetch only active categories for dropdown
+$active_categories = $conn->query("SELECT * FROM categories WHERE status='active' ORDER BY name ASC");
 // ✅ Load categories from DB
 $categories = [];
 $result = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
@@ -97,7 +98,7 @@ body::-webkit-scrollbar {
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header">
-            <h4 class="mb-0">☕ Add Product</h4>
+            <h4 class="mb-0">Add Product</h4>
         </div>
         <div class="card-body p-3">
 
@@ -111,17 +112,20 @@ body::-webkit-scrollbar {
                     <input type="text" name="name" class="form-control" placeholder="Product name" required>
                 </div>
 
-                <div class="mb-2">
-                    <label class="form-label">Category *</label>
-                    <select name="category_id" class="form-select" required>
-                        <option value="">-- Select Category --</option>
-                        <?php foreach ($categories as $cat): ?>
-                            <option value="<?= htmlspecialchars($cat['id']) ?>">
-                                <?= htmlspecialchars($cat['name']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+           <div class="mb-3">
+    <label for="category" class="form-label">Category</label>
+    <select name="category_id" id="category" class="form-select" required>
+        <option value="">-- Select Category --</option>
+        <?php if($active_categories && $active_categories->num_rows > 0): ?>
+            <?php while($cat = $active_categories->fetch_assoc()): ?>
+                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <option value="">No active categories</option>
+        <?php endif; ?>
+    </select>
+</div>
+
 
                 <div class="mb-2">
                     <label class="form-label">Price (USD) *</label>
