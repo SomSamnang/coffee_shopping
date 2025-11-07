@@ -2,7 +2,7 @@
 require_once('db_connect.php');
 
 // Fetch only active products
-$sql = "SELECT p.product_id, p.name, p.price, c.name AS category
+$sql = "SELECT p.product_id, p.name, p.price, p.description, p.image, c.name AS category
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         WHERE p.status='active'
@@ -19,11 +19,12 @@ if ($result && $result->num_rows > 0) {
 
 // Fixed category colors
 $categoryColors = [
-    'Hot Coffee' => '#FFE5B4',     // light warm orange
-    'Frappe' => '#D1C4E9',         // soft lavender
-    'Iced Tea' => '#B3E5FC',       // light blue
-    'Iced Latte' => '#F8BBD0',     // soft pink
-    'Other' => '#E0E0E0'           // light gray
+    'Hot Coffee' => '#FFE5B4',
+    'Frappe' => '#D1C4E9',
+    'Iced Tea' => '#B3E5FC',
+    'Iced Latte' => '#F8BBD0',
+    'Soft Drinks' => '#C8E6C9',
+    'Other' => '#E0E0E0'
 ];
 ?>
 <!DOCTYPE html>
@@ -47,19 +48,41 @@ body { background: #f8fafc; font-family: 'Poppins', sans-serif; }
 
 .search-box { max-width:300px; margin:10px auto; }
 
-.product-card { border-radius:15px; padding:20px; text-align:center; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.08); }
+.product-card {
+  border-radius:15px;
+  padding:15px;
+  text-align:center;
+  transition:0.3s;
+  box-shadow:0 4px 8px rgba(0,0,0,0.08);
+}
 .product-card:hover { transform: translateY(-5px); }
+
 .card-title { font-weight:600; font-size:1rem; }
 .card-price { color:#198754; font-weight:bold; margin-top:5px; }
+.card-desc { font-size:0.85rem; color:#555; margin-top:5px; }
+
+/* ✅ Smaller image size */
+.card-img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5%;
+  margin: 10px auto 8px auto;
+  display: block;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 #clock { text-align:center; font-weight:600; color:#555; margin:10px 0; }
 
 html, body { height:100%; overflow:auto; scrollbar-width:none; }
 body::-webkit-scrollbar { display:none; }
 
 @media (max-width:768px) {
-  .product-card { padding:15px; }
+  .product-card { padding:10px; }
   .category-nav { overflow-x:auto; white-space:nowrap; padding-bottom:5px; }
   .category-nav::-webkit-scrollbar { display:none; }
+  .card-img { width:70px; height:70px; }
 }
 </style>
 </head>
@@ -75,7 +98,7 @@ body::-webkit-scrollbar { display:none; }
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav gap-2">
             <li class="nav-item"><a class="nav-link active" href="index.php"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="product.php"><i class="bi bi-plus-circle"></i> Add Product</a></li>
+            <li class="nav-item"><a class="nav-link" href="product.php"><i class="bi bi-plus-circle"></i> Products</a></li>
             <li class="nav-item"><a class="nav-link" href="category_list.php"><i class="bi bi-list-ul"></i> Categories</a></li>
             <li class="nav-item"><a class="nav-link" href="orders.php"><i class="bi bi-basket"></i> Orders</a></li>
             <li class="nav-item"><a class="nav-link" href="orders_history.php"><i class="bi bi-clock-history"></i> Orders History</a></li>
@@ -114,13 +137,25 @@ body::-webkit-scrollbar { display:none; }
               <div class="row g-3">
                   <?php foreach ($products as $product): 
                       $color = $categoryColors[$category] ?? '#E0E0E0';
+                      $imagePath = $product['image'];
+
+                      // fix image path logic
+                      if (empty($imagePath)) {
+                          $imgPath = 'uploads/default.jpg';
+                      } elseif (strpos($imagePath, 'uploads/') === 0) {
+                          $imgPath = htmlspecialchars($imagePath);
+                      } else {
+                          $imgPath = 'uploads/' . htmlspecialchars($imagePath);
+                      }
                   ?>
                       <div class="col-6 col-md-3">
-                          <div class="product-card" 
-                               style="background-color: <?= $color ?>;"
-                               data-name="<?= strtolower($product['name']) ?>">
+                          <div class="product-card" style="background-color: <?= $color ?>;" data-name="<?= strtolower($product['name']) ?>">
+                              <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="card-img">
                               <div class="card-title"><?= htmlspecialchars($product['name']) ?></div>
                               <div class="card-price">$<?= number_format($product['price'],2) ?></div>
+                              <?php if (!empty($product['description'])): ?>
+                                <div class="card-desc"><?= htmlspecialchars($product['description']) ?></div>
+                              <?php endif; ?>
                           </div>
                       </div>
                   <?php endforeach; ?>

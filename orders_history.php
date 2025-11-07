@@ -102,7 +102,12 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav gap-2">
             <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link active" href="orders_history.php"><i class="bi bi-clock-history"></i> Orders History</a></li>
+<li class="nav-item">
+    <a style="color:white;" class="nav-link" href="orders.php">
+        <i class="bi bi-basket"></i> Orders
+    </a>
+</li>
+
         </ul>
     </div>
 </div>
