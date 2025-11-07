@@ -5,6 +5,7 @@ $order = null;
 $items = [];
 
 if ($order_id > 0) {
+    // Fetch order
     $stmt = $conn->prepare("SELECT id, total_amount, created_at FROM orders WHERE id=?");
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
@@ -13,10 +14,14 @@ if ($order_id > 0) {
     $stmt->close();
 
     if ($order) {
-        $stmt = $conn->prepare("SELECT oi.quantity, oi.item_price, (oi.quantity*oi.item_price) AS total_price, p.name AS product_name 
-                                FROM order_items oi 
-                                JOIN products p ON oi.product_id=p.product_id 
-                                WHERE oi.order_id=?");
+        // Fetch order items including sugar_level
+        $stmt = $conn->prepare("
+            SELECT oi.quantity, oi.item_price, (oi.quantity*oi.item_price) AS total_price,
+                   p.name AS product_name, oi.sugar_level
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.product_id
+            WHERE oi.order_id=?
+        ");
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
         $res_items = $stmt->get_result();
@@ -32,76 +37,20 @@ if ($order_id > 0) {
 <title>Invoice #<?= str_pad($order_id,4,'0',STR_PAD_LEFT) ?></title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body {
-    background-color: #f4f6f9;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
-.invoice-box {
-    max-width: 450px;
-    height: 490px;
-    margin: 0 auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-}
-.invoice-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-}
-.invoice-header h1 {
-    font-weight: 700;
-    color: #0d6efd;
-    margin-bottom: 5px;
-    font-size: 1.6rem;
-}
-.invoice-header p {
-    margin: 0;
-    color: #555;
-    font-size: 0.9rem;
-}
-.table th, .table td {
-    padding: 12px;
-    vertical-align: middle;
-}
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: #f8f9fa;
-}
-.final-total {
-    font-weight: 700;
-    font-size: 1.4rem;
-    color: #198754;
-}
-.table-responsive {
-    border-radius: 8px;
-    overflow: hidden;
-}
-.no-print {
-    text-align: left;
-    margin-top: 20px;
-}
-.no-print .btn {
-    margin: 5px;
-}
-@media print {
-    .no-print { display: none; }
-}
-/* Hide scrollbar but allow scroll */
-html, body {
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: none;
-}
-body::-webkit-scrollbar {
-    display: none;
-}
+body { background-color:#f4f6f9; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; margin:0; padding:20px; color:#333; }
+.invoice-box { max-width: 500px; height:auto; margin:0 auto; padding:30px; background:#fff; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.05); }
+.invoice-header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #ddd; padding-bottom:15px; margin-bottom:20px; }
+.invoice-header h1 { font-weight:700; color:#0d6efd; margin-bottom:5px; font-size:1.6rem; }
+.invoice-header p { margin:0; color:#555; font-size:0.9rem; }
+.table th, .table td { padding:12px; vertical-align:middle; }
+.table-striped tbody tr:nth-of-type(odd) { background-color:#f8f9fa; }
+.final-total { font-weight:700; font-size:1.4rem; color:#198754; }
+.table-responsive { border-radius:8px; overflow:hidden; }
+.no-print { text-align:left; margin-top:20px; }
+.no-print .btn { margin:5px; }
+@media print { .no-print { display:none; } }
+html, body { height:100%; overflow:auto; scrollbar-width:none; }
+body::-webkit-scrollbar { display:none; }
 </style>
 </head>
 <body>
@@ -112,10 +61,10 @@ body::-webkit-scrollbar {
         <div>
             <h1>INVOICE</h1>
             <p>#ID: <?= str_pad($order['id'],4,'0',STR_PAD_LEFT) ?></p>
-            <p>Date: <?= date('Y-m-d H:i:s',strtotime($order['created_at'])) ?></p>
+            <p>Date: <?= date('Y-m-d H:i:s', strtotime($order['created_at'])) ?></p>
         </div>
         <div class="text-end">
-            <h5 class="text-primary fw-bold">☕COFFEE SHOPPING</h5>
+            <h5 class="text-primary fw-bold">☕ COFFEE SHOPPING</h5>
             <p>123 Coffee Lane</p>
             <p>Samnang@dailyShopping.com</p>
         </div>
@@ -126,24 +75,31 @@ body::-webkit-scrollbar {
             <thead>
                 <tr>
                     <th>Item</th>
+                    <th class="text-center">Sugar</th>
                     <th class="text-end">Unit</th>
+                    
                     <th class="text-center">Qty</th>
+                    
                     <th class="text-end">Total</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($items as $i=>$it): ?>
+                <?php foreach($items as $i => $it): ?>
                 <tr>
+                    
                     <td><?= str_pad($i+1,2,'0',STR_PAD_LEFT) ?>. <?= htmlspecialchars($it['product_name']) ?></td>
+                    <td class="text-center"><?= htmlspecialchars($it['sugar_level']) ?></td>
                     <td class="text-end">$<?= number_format($it['item_price'],2) ?></td>
+                    
                     <td class="text-center"><?= $it['quantity'] ?></td>
+                    
                     <td class="text-end">$<?= number_format($it['total_price'],2) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3" class="text-end">TOTAL:</th>
+                    <th colspan="4" class="text-end">TOTAL:</th>
                     <th class="text-end final-total">$<?= number_format($order['total_amount'],2) ?></th>
                 </tr>
             </tfoot>
@@ -157,16 +113,8 @@ body::-webkit-scrollbar {
 </div>
 
 <script>
-// Automatically print when page loads
-window.onload = function() {
-    window.print(); // Open print dialog
-};
-
-// After printing, redirect to orders page
-window.onafterprint = function() {
-    window.location.href = "orders.php";
-};
-
+window.onload = function() { window.print(); };
+window.onafterprint = function() { window.location.href = "orders.php"; };
 </script>
 
 <?php else: ?>

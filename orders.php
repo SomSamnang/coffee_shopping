@@ -3,20 +3,22 @@ require_once 'db_connect.php';
 
 $message = "";
 
-// Fetch only active products
-$sql = "SELECT p.product_id, p.name, p.price, c.name AS category
+// Fetch Menu Data
+$menu = [];
+$categories = [];
+$sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name
         FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN categories c ON p.category_id=c.id
         WHERE p.status='active'
         ORDER BY c.name, p.name";
 $result = $conn->query($sql);
-
-$products_by_category = [];
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $category = $row['category'] ?? 'Other';
-        $products_by_category[$category][] = $row;
+        $group = $row['category_name'] ?? 'Uncategorized';
+        $menu[$group][] = $row;
+        if (!in_array($group, $categories)) $categories[] = $group;
     }
+    $result->free();
 }
 
 // Handle Order Submission
@@ -35,11 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
             $stmt->close();
 
             $items_array = json_decode($order_items_raw, true);
-            $stmt_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, item_price) VALUES (?, ?, ?, ?)");
+            $stmt_item = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, item_price, sugar_level) VALUES (?, ?, ?, ?, ?)");
             if (!$stmt_item) throw new Exception($conn->error);
 
             foreach ($items_array as $item) {
-                $stmt_item->bind_param("iiid", $order_id, $item['id'], $item['qty'], $item['price']);
+                $stmt_item->bind_param("iiids", $order_id, $item['id'], $item['qty'], $item['price'], $item['sugar']);
                 $stmt_item->execute();
             }
             $stmt_item->close();
@@ -55,24 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         $message = "<div class='alert alert-warning'>⚠️ Please select at least one item.</div>";
     }
 }
-
-// Fetch Menu Data
-$menu = [];
-$categories = [];
-$sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name
-        FROM products p
-        LEFT JOIN categories c ON p.category_id=c.id
-        WHERE p.status='active'
-        ORDER BY c.name, p.name";
-$result = $conn->query($sql);
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $group = $row['category_name'] ?? 'Uncategorized';
-        $menu[$group][] = $row;
-        if (!in_array($group, $categories)) $categories[] = $group;
-    }
-    $result->free();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,25 +67,13 @@ if ($result && $result->num_rows > 0) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <style>
-/* General Styles */
 body { background: #f8f9fa; font-family: 'Poppins', sans-serif; margin:0; }
 h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
 
 /* Sticky Header */
 .sticky-header-wrapper { position: sticky; top:0; z-index:1050; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-.header-content {
-    display:flex; justify-content:space-between; align-items:center;
-     padding:9px 18px;
-    background: linear-gradient(90deg, #0d6efd, #6610f2);
-}
-.header-left {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(90deg, #ffffffff, #fdd10dff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.header-content { display:flex; justify-content:space-between; align-items:center; padding:9px 18px; background: linear-gradient(90deg, #0d6efd, #6610f2); }
+.header-left { margin: 0; font-size: 1.5rem; font-weight: 700; background: linear-gradient(90deg, #ffffffff, #fdd10dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #clock { font-weight:600; color:blue; }
 .search-input { width:220px; height:36px; border-radius:8px; border:1px solid #ced4da; }
 
@@ -118,21 +90,27 @@ h1 { font-size:1.5rem; color:#0d6efd; font-weight:700; margin:0; }
 .category-section h2 { background:#0d6efd; color:#fff; padding:8px 12px; border-radius:6px; font-size:1.1rem; }
 
 /* Item Cards */
-.item-card {
-    background:#fff; border-radius:8px; padding:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1);
-    display:flex; flex-direction:column; justify-content:space-between; transition:transform 0.2s;
-}
+.item-card { background:#fff; border-radius:8px; padding:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:space-between; transition:transform 0.2s; }
 .item-card:hover { transform:translateY(-3px); }
 .item-card h5 { margin:0 0 8px 0; font-size:1rem; color:#343a40; }
 .item-card p { margin:0 0 8px 0; color:#198754; font-weight:600; }
-.item-card input { width:70px; padding:5px; text-align:center; border-radius:5px; border:1px solid #ced4da; }
+.item-controls { display:flex; flex-direction:column; gap:6px; }
+.item-quantity { width:60px; padding:5px; text-align:center; border-radius:5px; border:1px solid #ced4da; }
+.item-sugar { width:100%; border-radius:6px; border:1px solid #ced4da; background-color:#f8f9fa; font-size:0.95rem; padding:4px 6px; }
 
 /* Order Area */
 .order-area { position:sticky; top:160px; background:#fff; padding:20px; border-radius:8px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
-.order-area h4 { margin-bottom:15px; color:#0d6efd; }
-.order-summary { font-weight:600; font-size:1.2rem; }
+.order-area h4 { margin-bottom:10px; color:#0d6efd; display:flex; justify-content:space-between; align-items:center; }
+.order-summary { font-weight:600; font-size:1.1rem; margin-bottom:10px; }
+.cart-list { max-height:300px; overflow-y:auto; margin-bottom:10px; }
+.cart-item { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px dashed #ccc; font-size:0.95rem; }
 .button-pos { width:100%; background:#198754; color:white; border:none; padding:12px; font-size:16px; border-radius:5px; transition:0.2s; }
 .button-pos:hover { background:#157347; }
+
+/* Quantity Buttons Color */
+.qty-increase { background:#198754 !important; color:#fff !important; }
+.qty-decrease { background:#dc3545 !important; color:#fff !important; }
+.qty-clear { background:#ffc107 !important; color:#000 !important; }
 
 /* Responsive */
 @media(max-width:768px){
@@ -152,7 +130,6 @@ body::-webkit-scrollbar { display:none; }
             <h1>Daily Grind Coffee Orders</h1>
         </div>
         <input type="text" id="searchBox" class="form-control search-input" placeholder="Search products...">
-
     </div>
     <div class="category-bar">
         <div class="category-scroll">
@@ -179,9 +156,25 @@ body::-webkit-scrollbar { display:none; }
                     </div>
                     <?php foreach ($items_arr as $item): ?>
                         <div class="item-card" data-id="<?= $item['product_id'] ?>" data-price="<?= $item['price'] ?>" data-category="<?= strtolower($category) ?>">
-                            <h5><?= htmlspecialchars($item['name']) ?></h5>
-                            <p>$<?= number_format($item['price'],2) ?></p>
-                            <input type="number" min="0" value="0" class="item-quantity">
+                            <div class="item-info">
+                                <h5><?= htmlspecialchars($item['name']) ?></h5>
+                                <p>$<?= number_format($item['price'],2) ?></p>
+                            </div>
+                            <div class="item-controls d-flex flex-column gap-2">
+                                <div class="d-flex gap-1 align-items-center">
+                                    <button type="button" class="btn btn-sm qty-decrease">-</button>
+                                    <input type="number" min="0" value="0" class="item-quantity text-center" title="Quantity">
+                                    <button type="button" class="btn btn-sm qty-increase">+</button>
+                                    <button type="button" class="btn btn-sm qty-clear">Clear</button>
+                                </div>
+                                <select class="item-sugar form-select form-select-sm" title="Sugar Level">
+                                    <option value="100%">100% sugar</option>
+                                    <option value="70%">70% sugar</option>
+                                    <option value="50%">50% sugar</option>
+                                    <option value="30%">30% sugar</option>
+                                    <option value="0%">No sugar</option>
+                                </select>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
@@ -191,7 +184,11 @@ body::-webkit-scrollbar { display:none; }
         <!-- Order Column -->
         <div class="col-lg-4">
             <div class="order-area">
-                <h4>🧾 Cart Summary</h4>
+                <h4>
+                    🧾 Cart Summary
+                    <button type="button" id="clearAllCart" class="btn btn-sm btn-outline-danger">Clear All</button>
+                </h4>
+                <div class="cart-list" id="cart_list"></div>
                 <p class="order-summary" id="order_summary">Total: $0.00</p>
                 <input type="hidden" name="order_total" id="order_total_input" value="0.00">
                 <input type="hidden" name="order_items" id="order_items_input" value="">
@@ -205,66 +202,107 @@ body::-webkit-scrollbar { display:none; }
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Clock Display
+// Track quantities per product ID + sugar
+const quantities = {}; // key = productID + '|' + sugar
+
+function calculateTotal() {
+    let total = 0;
+    const items = [];
+    const cartList = document.getElementById('cart_list');
+    cartList.innerHTML = '';
+
+    // Grouped by product name for visual grouping
+    const grouped = {};
+    Object.keys(quantities).forEach(key => {
+        const [id, sugar] = key.split('|');
+        const qty = quantities[key];
+        if (qty > 0) {
+            const card = document.querySelector(`.item-card[data-id='${id}']`);
+            const name = card.querySelector('h5').textContent;
+            const price = parseFloat(card.getAttribute('data-price'));
+            total += price * qty;
+            items.push({id:parseInt(id), qty:qty, price:price, sugar:sugar});
+
+            if (!grouped[name]) grouped[name] = [];
+            grouped[name].push({sugar:sugar, qty:qty, price:price});
+        }
+    });
+
+    // Display grouped items
+    Object.keys(grouped).forEach(name => {
+        grouped[name].forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.textContent = `${name} ${item.sugar} x${item.qty} - $${(item.price*item.qty).toFixed(2)}`;
+            cartList.appendChild(itemDiv);
+        });
+    });
+
+    document.getElementById('order_summary').textContent = `Total: $${total.toFixed(2)}`;
+    document.getElementById('order_total_input').value = total.toFixed(2);
+    document.getElementById('order_items_input').value = JSON.stringify(items);
+}
+
+// Initialize cards
+document.querySelectorAll('.item-card').forEach(card => {
+    const qtyInput = card.querySelector('.item-quantity');
+    const sugarSelect = card.querySelector('.item-sugar');
+    const id = card.getAttribute('data-id');
+
+    const defaultKey = id + '|100%';
+    quantities[defaultKey] = 0;
+
+    qtyInput.addEventListener('input', () => {
+        const key = id + '|' + sugarSelect.value;
+        quantities[key] = parseInt(qtyInput.value) || 0;
+        calculateTotal();
+    });
+
+    sugarSelect.addEventListener('change', () => {
+        const key = id + '|' + sugarSelect.value;
+        if (!(key in quantities)) quantities[key] = 0;
+        qtyInput.value = quantities[key];
+        calculateTotal();
+    });
+
+    card.querySelector('.qty-increase').addEventListener('click', () => {
+        const key = id + '|' + sugarSelect.value;
+        quantities[key] = (quantities[key] || 0) + 1;
+        qtyInput.value = quantities[key];
+        calculateTotal();
+    });
+    card.querySelector('.qty-decrease').addEventListener('click', () => {
+        const key = id + '|' + sugarSelect.value;
+        quantities[key] = Math.max(0, (quantities[key] || 0) - 1);
+        qtyInput.value = quantities[key];
+        calculateTotal();
+    });
+    card.querySelector('.qty-clear').addEventListener('click', () => {
+        const key = id + '|' + sugarSelect.value;
+        quantities[key] = 0;
+        qtyInput.value = 0;
+        calculateTotal();
+    });
+});
+
+// Clear all
+document.getElementById('clearAllCart').addEventListener('click', () => {
+    Object.keys(quantities).forEach(k => quantities[k]=0);
+    document.querySelectorAll('.item-quantity').forEach(input => input.value=0);
+    calculateTotal();
+});
+
+// Clock
 function updateClock() {
     const now = new Date();
     const options = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
     document.querySelectorAll('#clock').forEach(el => el.textContent = now.toLocaleDateString('en-US', options));
 }
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 updateClock();
 
-// Calculate Cart Total
-function calculateTotal() {
-    let total = 0;
-    const items = [];
-    document.querySelectorAll('.item-card').forEach(div => {
-        const id = parseInt(div.getAttribute('data-id'));
-        const price = parseFloat(div.getAttribute('data-price'));
-        const qty = parseInt(div.querySelector('.item-quantity').value) || 0;
-        if(qty>0){ total += price*qty; items.push({id:id,qty:qty,price:price}); }
-    });
-    document.getElementById('order_summary').textContent = `Total: $${total.toFixed(2)}`;
-    document.getElementById('order_total_input').value = total.toFixed(2);
-    document.getElementById('order_items_input').value = JSON.stringify(items);
-}
-document.querySelectorAll('.item-quantity').forEach(input => input.addEventListener('input', calculateTotal));
-window.onload = calculateTotal;
-
-// Search & Category Filter
-const searchBox = document.getElementById('searchBox');
-const catButtons = document.querySelectorAll('.category-btn');
-const categorySections = document.querySelectorAll('.category-section');
-const itemCards = document.querySelectorAll('.item-card');
-
-function updateVisibility() {
-    const selectedCategory = document.querySelector('.category-btn.active').getAttribute('data-category').toLowerCase();
-    const searchTerm = searchBox.value.toLowerCase();
-
-    categorySections.forEach(section => {
-        const catName = section.getAttribute('data-category').toLowerCase();
-        const items = Array.from(itemCards).filter(card => card.getAttribute('data-category') === catName);
-
-        let anyVisible = false;
-        items.forEach(card => {
-            const name = card.querySelector('h5').textContent.toLowerCase();
-            const visible = (selectedCategory==='all'||catName===selectedCategory) && name.includes(searchTerm);
-            card.style.display = visible ? 'block':'none';
-            if(visible) anyVisible=true;
-        });
-        section.style.display = anyVisible?'block':'none';
-    });
-}
-
-catButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        catButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateVisibility();
-    });
-});
-searchBox.addEventListener('input', updateVisibility);
-updateVisibility();
+// Initial calculation
+calculateTotal();
 </script>
 </body>
 </html>
