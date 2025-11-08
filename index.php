@@ -46,8 +46,8 @@ html, body { height: 100%; overflow: auto; scrollbar-width: none; }
 body::-webkit-scrollbar { display: none; }
 
 .navbar { background: linear-gradient(90deg, #6f42c1, #0d6efd); position: sticky; top:0; z-index:1030; }
-.navbar .nav-link { color: #fff !important; font-weight:500; }
-.navbar .nav-link:hover, .navbar .nav-link.active { background: rgba(255,255,255,0.2); border-radius:8px; }
+.navbar .nav-link { color: #ffffffff !important; font-weight:500; }
+.navbar .nav-link:hover, .navbar .nav-link.active { background: rgba(0, 255, 8, 0.2); border-radius:8px; }
 
 .sticky-filter { position: sticky; top: 56px; z-index:1020; background: #fff; border-bottom:1px solid #ddd; padding:10px 0; }
 .category-nav { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
@@ -105,7 +105,7 @@ body::-webkit-scrollbar { display: none; }
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
-          
+           
                 <?php if($role === 'admin'): ?>
                 <li><a class="dropdown-item" href="user_list.php"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li>
                 <?php endif; ?>
