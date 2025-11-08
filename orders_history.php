@@ -139,7 +139,7 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
 <?php if ($result && $result->num_rows>0):
     while($row = $result->fetch_assoc()): ?>
 <tr>
-    <td><a href="#" class="order-link" data-id="<?= $row['order_id'] ?>">#<?= $row['order_id'] ?></a></td>
+    <td><a href="#" class="order-link" data-id="<?= $row['order_id'] ?>">#000<?= $row['order_id'] ?></a></td>
     <td>$<?= number_format($row['total_amount'],2) ?></td>
     <td><?= date('Y-m-d H:i', strtotime($row['created_at'])) ?></td>
 </tr>

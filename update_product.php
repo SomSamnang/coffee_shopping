@@ -112,14 +112,7 @@ img.preview { width:150px; border-radius:8px; display:block; margin-top:10px; }
             </select>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-select" required>
-                <option value="active" <?= $product['status']=='active'?'selected':'' ?>>Active</option>
-                <option value="inactive" <?= $product['status']=='inactive'?'selected':'' ?>>Inactive</option>
-            </select>
-        </div>
-
+  
         <div class="mb-3">
             <label class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="4"><?= htmlspecialchars($product['description']) ?></textarea>
@@ -131,6 +124,13 @@ img.preview { width:150px; border-radius:8px; display:block; margin-top:10px; }
             <?php if(!empty($product['image'])): ?>
                 <img src="uploads/<?= htmlspecialchars($product['image']) ?>" alt="Product Image" class="preview">
             <?php endif; ?>
+        </div>
+      <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select" required>
+                <option value="active" <?= $product['status']=='active'?'selected':'' ?>>Active</option>
+                <option value="inactive" <?= $product['status']=='inactive'?'selected':'' ?>>Inactive</option>
+            </select>
         </div>
 
         <div class="d-flex gap-2">
