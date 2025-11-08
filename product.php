@@ -1,5 +1,10 @@
 <?php
 require_once 'db_connect.php';
+session_start();
+
+// Fetch logged-in user info
+$currentUser = $_SESSION['username'] ?? null;
+$role = $_SESSION['role'] ?? null;
 
 // Fetch products including nullable description and image
 $sql = "SELECT p.product_id, p.name, p.price, c.name AS category_name, p.status, p.description, p.image
@@ -20,6 +25,7 @@ if (!$result) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
+/* Keep your previous styles here */
 body { background-color: #f7f8fa; font-family: 'Poppins', sans-serif; margin:0; }
 header { background: linear-gradient(90deg, #0d6efd, #6610f2); color:white; padding:9px 18px; position: sticky; top:0; z-index:1000; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:2px solid rgba(255,255,255,0.2); }
 header h1 { margin:0; font-size:1.6rem; font-weight:700; background: linear-gradient(90deg,#fff,#fdd10d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
@@ -49,15 +55,78 @@ img.product-img { max-width:80px; border-radius:8px; }
 <body>
 
 <header>
-<h1> Product Menu</h1>
+<h1>Product Menu</h1>
 <div class="d-flex align-items-center gap-2 flex-wrap">
+
+    <!-- Search -->
     <div class="search-container">
-        <input type="text" id="searchBox" placeholder="Search products..."><i class="bi bi-search"></i>
+        <input type="text" id="searchBox" placeholder="Search products...">
+        <i class="bi bi-search"></i>
     </div>
+
+    <!-- Nav Buttons -->
     <div class="nav-buttons d-flex gap-1">
-        <a href="add_product.php" class="btn btn-add btn-sm"><i class="bi bi-plus-circle"></i> Add Product</a>
-        <a href="index.php" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+        <a href="add_product.php" class="btn btn-add btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Product</a>
+    
     </div>
+
+   <!-- User Dropdown / Login -->
+<ul class="nav">
+<?php if($currentUser): ?>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color:white;">
+            <i class="bi bi-person-circle me-1" style="color:yellow;"></i>
+            <?= htmlspecialchars($currentUser) ?>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+            <!-- Profile -->
+            <li>
+                <a class="dropdown-item" href="profile.php" style="color:blue; font-weight:500;">
+                    <i class="bi bi-person me-2" style="color:blue;"></i> Profile
+                </a>
+            </li>
+
+            <!-- Home -->
+<li>
+    <a class="dropdown-item d-flex align-items-center gap-2" href="index.php" style="color:blue; style="font-weight:500;">
+       
+            <i class="bi bi-house-door "style="color:pink;"></i>
+        </span>
+        Home
+    </a>
+</li>
+
+
+            <!-- Users (admin only) -->
+            <?php if($role === 'admin'): ?>
+            <li>
+                <a class="dropdown-item" href="user_list.php"style="color:blue; font-weight:500;">
+                    <i class="bi bi-people-fill me-2"style="color:green;"></i> Users
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <!-- Logout -->
+            <li>
+                <a class="dropdown-item text-danger" href="logout.php" style="color:blue;font-weight:500;">
+                    <i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </li>
+<?php else: ?>
+    <li class="nav-item">
+        <a class="nav-link btn btn-outline-light btn-sm" href="login.php" style="color:blue; font-weight:500;">
+            <i class="bi bi-box-arrow-in-right me-2" style="color:green;"></i> Login
+        </a>
+    </li>
+<?php endif; ?>
+</ul>
+
+
 </div>
 </header>
 
@@ -141,7 +210,6 @@ img.product-img { max-width:80px; border-radius:8px; }
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 // Live Search
 document.getElementById("searchBox").addEventListener("keyup", function() {
@@ -179,3 +247,4 @@ document.querySelectorAll(".viewBtn").forEach(btn=>{
 </body>
 </html>
 <?php $conn->close(); ?>
+ 

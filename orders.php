@@ -4,7 +4,7 @@ require_once 'db_connect.php';
 
 $message = "";
 
-// Fetch Menu Data
+// Fetch menu and categories
 $menu = [];
 $categories = [];
 $sql = "SELECT p.product_id, p.name, p.price, p.description, p.image, c.name AS category_name
@@ -22,12 +22,12 @@ if ($result && $result->num_rows > 0) {
     $result->free();
 }
 
-// Handle Order Submission
+// Handle order submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
-    $order_total = isset($_POST['order_total']) ? floatval($_POST['order_total']) : 0.00;
-    $order_items_raw = isset($_POST['order_items']) ? $_POST['order_items'] : '';
+    $order_total = floatval($_POST['order_total'] ?? 0);
+    $order_items_raw = $_POST['order_items'] ?? '';
 
-    if ($order_total > 0 && !empty($order_items_raw)) {
+    if ($order_total > 0 && $order_items_raw) {
         $conn->begin_transaction();
         try {
             $stmt = $conn->prepare("INSERT INTO orders (total_amount, created_at) VALUES (?, NOW())");
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coffee Shop POS</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
 body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
 .sticky-header-wrapper { position:sticky; top:0; z-index:1050; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -108,13 +108,44 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
         <h1>Daily Grind Coffee</h1>
         <div class="d-flex gap-3 align-items-center">
             <input type="text" id="searchBox" class="form-control search-input" placeholder="Search products...">
-                    <a class="btn btn-outline-light btn-sm" href="index.php"><i class="bi bi-house-door"></i> Home</a>
-            <?php if(isset($_SESSION['username'])): ?>
-                <span><i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['username']) ?></span>]
-                <a class="btn btn-outline-light btn-sm" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            <?php else: ?>
-                <a class="btn btn-outline-light btn-sm" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-            <?php endif; ?>
+          
+<div class="dropdown">
+  <?php if(isset($_SESSION['username'])): ?>
+    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle text-primary"></i> <?= htmlspecialchars($_SESSION['username']) ?>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+       <li>
+    <a class="dropdown-item" href="profile.php">
+        <i class="bi bi-person me-2" style="color:blue;"></i> Profile
+    </a>
+</li>
+
+<?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <li>
+        <a class="dropdown-item" href="index.php">
+            <i class="bi bi-house-door me-2" style="color:green;"></i> Home
+        </a>
+    </li>
+<?php endif; ?>
+
+<li><hr class="dropdown-divider"></li>
+
+<li>
+    <a class="dropdown-item text-danger" href="logout.php">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+    </a>
+</li>
+
+
+    </ul>
+  <?php else: ?>
+    <a class="btn btn-outline-light btn-sm" href="login.php"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+  <?php endif; ?>
+</div>
+
+
+
         </div>
     </div>
 
@@ -131,7 +162,6 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
 
 <div class="container my-4">
 <?= $message ?>
-
 <form method="POST">
 <div class="row">
     <div class="col-lg-8">
@@ -141,8 +171,8 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
                     <h2><?= htmlspecialchars($category) ?></h2>
                 </div>
                 <?php foreach ($items_arr as $item):
-                    $imagePath = $item['image'] ?: 'uploads/default.jpg';
-                    $imgPath = (strpos($imagePath,'uploads/')===0)? htmlspecialchars($imagePath) : 'uploads/'.htmlspecialchars($imagePath);
+                    $imgPath = $item['image'] ?: 'uploads/default.jpg';
+                    $imgPath = (strpos($imgPath,'uploads/')===0) ? htmlspecialchars($imgPath) : 'uploads/'.htmlspecialchars($imgPath);
                 ?>
                 <div class="item-card" data-id="<?= $item['product_id'] ?>" data-price="<?= $item['price'] ?>" data-category="<?= strtolower($category) ?>">
                     <img src="<?= $imgPath ?>" class="item-img" alt="<?= htmlspecialchars($item['name']) ?>">

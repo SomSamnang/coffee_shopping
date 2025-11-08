@@ -41,30 +41,27 @@ $categoryColors = [
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-/* General Styles */
 body { background: #f8fafc; font-family: 'Poppins', sans-serif; }
 html, body { height: 100%; overflow: auto; scrollbar-width: none; }
 body::-webkit-scrollbar { display: none; }
 
-/* Navbar */
 .navbar { background: linear-gradient(90deg, #6f42c1, #0d6efd); position: sticky; top:0; z-index:1030; }
 .navbar .nav-link { color: #fff !important; font-weight:500; }
 .navbar .nav-link:hover, .navbar .nav-link.active { background: rgba(255,255,255,0.2); border-radius:8px; }
 
-/* Sticky Filter */
 .sticky-filter { position: sticky; top: 56px; z-index:1020; background: #fff; border-bottom:1px solid #ddd; padding:10px 0; }
 .category-nav { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
-.category-nav button { border-radius:30px; font-weight:500; }
+.category-nav button { border-radius:30px; font-weight:500; cursor:pointer; }
 .category-nav button.active { background-color:#0d6efd; color:#fff; border-color:#0d6efd; }
 .search-box { max-width:300px; margin:10px auto; }
 
-/* Product Cards */
 .product-card {
     border-radius:15px;
     padding:15px;
     text-align:center;
     transition:0.3s;
     box-shadow:0 4px 8px rgba(0,0,0,0.08);
+    cursor:pointer;
 }
 .product-card:hover { transform: translateY(-5px); }
 .card-title { font-weight:600; font-size:1rem; }
@@ -72,10 +69,8 @@ body::-webkit-scrollbar { display: none; }
 .card-desc { font-size:0.85rem; color:#555; margin-top:5px; }
 .card-img { width:200px; height:150px; object-fit:cover; border-radius:5%; margin:10px auto 8px; display:block; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
 
-/* Clock */
 #clock { text-align:center; font-weight:600; color:#555; margin:10px 0; }
 
-/* Responsive */
 @media (max-width:768px) {
   .product-card { padding:10px; }
   .category-nav { overflow-x:auto; white-space:nowrap; padding-bottom:5px; }
@@ -101,28 +96,27 @@ body::-webkit-scrollbar { display: none; }
         <li class="nav-item"><a class="nav-link" href="orders.php"><i class="bi bi-basket"></i> Orders</a></li>
         <li class="nav-item"><a class="nav-link" href="orders_history.php"><i class="bi bi-clock-history"></i> Orders History</a></li>
 
+        <!-- User Dropdown / Login -->
         <?php if($currentUser): ?>
-        <!-- Dropdown for logged-in user -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i> <?= htmlspecialchars($currentUser) ?>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person"></i> Profile</a></li>
-            <?php if($role === 'admin'): ?>
-           <li>
-  <a class="dropdown-item" href="user_list.php">
-    <i class="bi bi-people-fill me-2 text-primary"></i> Users
-  </a>
-</li>
-
-            <?php endif; ?>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-          </ul>
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color:white;">
+                <i class="bi bi-person-circle me-1" style="color:yellow;"></i>
+                <?= htmlspecialchars($currentUser) ?>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
+          
+                <?php if($role === 'admin'): ?>
+                <li><a class="dropdown-item" href="user_list.php"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li>
+                <?php endif; ?>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
+            </ul>
         </li>
         <?php else: ?>
-        <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+        <li class="nav-item">
+            <a class="nav-link btn btn-outline-light btn-sm" href="login.php"><i class="bi bi-box-arrow-in-right me-2"></i> Login</a>
+        </li>
         <?php endif; ?>
       </ul>
     </div>
@@ -158,7 +152,9 @@ body::-webkit-scrollbar { display: none; }
           $imgPath = !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'uploads/default.jpg';
         ?>
         <div class="col-6 col-md-3">
-          <div class="product-card" style="background-color: <?= $color ?>;" data-name="<?= strtolower($product['name']) ?>">
+          <div class="product-card" style="background-color: <?= $color ?>;"
+               data-name="<?= strtolower($product['name']) ?>"
+               data-desc="<?= strtolower($product['description'] ?? '') ?>">
             <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="card-img">
             <div class="card-title"><?= htmlspecialchars($product['name']) ?></div>
             <div class="card-price">$<?= number_format($product['price'],2) ?></div>
@@ -208,8 +204,10 @@ searchBox.addEventListener('input', () => {
     let visible = false;
     group.querySelectorAll('.product-card').forEach(card => {
       const name = card.dataset.name;
-      card.style.display = name.includes(query) ? '' : 'none';
-      if(name.includes(query)) visible = true;
+      const desc = card.dataset.desc || '';
+      const match = name.includes(query) || desc.includes(query);
+      card.style.display = match ? '' : 'none';
+      if(match) visible = true;
     });
     group.style.display = visible ? '' : 'none';
   });

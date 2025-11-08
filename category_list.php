@@ -1,5 +1,10 @@
 <?php
+session_start();
 require_once 'db_connect.php'; 
+
+// Fetch logged-in user info
+$currentUser = $_SESSION['username'] ?? null;
+$role = $_SESSION['role'] ?? null;
 
 // Fetch all categories
 $result = $conn->query("SELECT * FROM categories ORDER BY id DESC");
@@ -20,16 +25,26 @@ body {
     padding: 0;
 }
 
+/* Navbar */
+.navbar {
+    color: white;
+    padding: 0.5rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.navbar-brand { color: white; font-weight: 600; }
+.navbar-nav .nav-link { color: white; margin-right: 8px; font-weight: 500; }
+.navbar-nav .nav-link:hover { background: rgba(255,255,255,0.2); border-radius: 8px; }
+
+/* Dropdown center under button */
+.dropdown-menu-center { left: 50% !important; transform: translateX(-50%) !important; }
+
 /* Header */
 header {
     background: linear-gradient(90deg, #0d6efd, #6610f2);
     color: white;
-     padding:9px 18px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    border-bottom: 2px solid rgba(255,255,255,0.2);
+    padding: 2px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -76,9 +91,7 @@ header h1 {
     flex: 1;
     font-size: 0.95rem;
 }
-.search-container i {
-    color: #0d6efd;
-}
+.search-container i { color: #0d6efd; }
 
 /* Container */
 .container {
@@ -89,73 +102,58 @@ header h1 {
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
+/* Add Category button */
+.btn-add {
+    background-color: #198754;
+    color: white;
+    margin-bottom: 10px;
+    font-weight: 500;
+    padding: 6px 18px;
+    border-radius: 10px;
+
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
+.btn-add:hover {
+    background-color: #157347;
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: white;
+}
+
 
 /* Table */
-.table {
-    border-radius: 12px;
-    overflow: hidden;
-}
-.table th, .table td {
-    padding: 12px 15px;
-    text-align: center;
-}
-.table th {
-    background-color: #f4f4f4;
-}
+.table { border-radius: 12px; overflow: hidden; }
+.table th, .table td { padding: 12px 15px; text-align: center; }
+.table th { background-color: #f4f4f4; }
 .table tr:hover { background-color: #f1f7ff; }
-
-/* Status Colors */
-.status-active { background-color:#d1e7dd; color:#0f5132; }
-.status-inactive { background-color:#f8d7da; color:#842029; }
 
 /* Status badge */
 .badge-active { background-color:#0f5132; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.85rem; }
 .badge-inactive { background-color:#842029; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.85rem; }
 
 /* Action Buttons */
-.btn-action {
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    margin-right: 5px;
-    color: white;
-    font-weight: 500;
-    text-decoration: none;
-}
+.btn-action { padding: 5px 12px; border-radius: 6px; font-size: 14px; margin-right: 5px; color: white; font-weight: 500; text-decoration: none; }
 .edit-btn { background-color: #2196F3; }
 .edit-btn:hover { background-color: #1976d2; }
 .delete-btn { background-color: #f44336; }
 .delete-btn:hover { background-color: #c62828; }
 
-/* Hide scrollbar */
-html, body {
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: none;
-}
-body::-webkit-scrollbar { display: none; }
-
 /* Responsive */
 @media (max-width:768px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    .search-container {
-        width: 100%;
-    }
-    .nav-buttons {
-        width: 100%;
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .search-container { width: 100%; }
+    .nav-buttons { width: 100%; display: flex; gap: 6px; flex-wrap: wrap; }
 }
 </style>
 </head>
 <body>
 
+
+
+<!-- Page Header -->
 <header>
     <h1>Category List</h1>
     <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -163,16 +161,72 @@ body::-webkit-scrollbar { display: none; }
             <input type="text" id="searchBox" placeholder="Search categories...">
             <i class="bi bi-search"></i>
         </div>
-        <div class="nav-buttons d-flex gap-1">
-            <a href="add_category.php"><i class="bi bi-plus-circle"></i> Add Category</a>
-            <a href="index.php"><i class="bi bi-arrow-left"></i> Back</a>
-        </div>
+
+        <!-- Navbar with User Dropdown -->
+<nav class="navbar navbar-expand-lg">
+    <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav align-items-center">
+            <?php if($currentUser): ?>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle me-1" style="color:yellow;"></i> <?= htmlspecialchars($currentUser) ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-center">
+                    <!-- Profile -->
+                    <li>
+                        <a class="dropdown-item" href="profile.php" style="color:blue; font-weight:500;">
+                            <i class="bi bi-person me-2" style="color:blue;"></i> Profile
+                        </a>
+                    </li>
+                    <!-- Home -->
+                    <li>
+                        <a class="dropdown-item" href="index.php" style="color:blue; font-weight:500;">
+                            <i class="bi bi-house-door me-2" style="color:pink;"></i> Home
+                        </a>
+                    </li>
+                    <!-- Users (admin only) -->
+                    <?php if($role === 'admin'): ?>
+                    <li>
+                        <a class="dropdown-item" href="user_list.php" style="color:blue; font-weight:500;">
+                            <i class="bi bi-people-fill me-2" style="color:green;"></i> Users
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    <li><hr class="dropdown-divider"></li>
+                    <!-- Logout -->
+                    <li>
+                        <a class="dropdown-item text-danger" href="logout.php" style="color:blue;font-weight:500;">
+                            <i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <?php else: ?>
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-light btn-sm" href="login.php">
+                    <i class="bi bi-box-arrow-in-right me-2" style="color:green;"></i> Login
+                </a>
+            </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</nav>
     </div>
 </header>
 
+<!-- Category Table -->
 <div class="container">
-    <div class="table-responsive">
+    <!-- Add Category Button -->
+    <div class="d-flex justify-content-end">
+        <a href="add_category.php" class="btn-add">
+            <i class="bi bi-plus-circle"></i> Add Category
+        </a>
+
+        
+    </div>
+   <div class="table-responsive mt-2">
         <table class="table table-striped" id="categoryTable">
+            
             <thead>
                 <tr>
                     <th>ID</th>
@@ -201,13 +255,14 @@ body::-webkit-scrollbar { display: none; }
                     </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="5">categories no found.</td></tr>
+                    <tr><td colspan="5">Categories not found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Live search
 document.getElementById('searchBox').addEventListener('keyup', function() {
@@ -220,3 +275,4 @@ document.getElementById('searchBox').addEventListener('keyup', function() {
 
 </body>
 </html>
+<?php $conn->close(); ?>

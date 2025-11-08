@@ -100,7 +100,7 @@ body::-webkit-scrollbar {
                     <input type="text" name="name" class="form-control" placeholder="Enter category name" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 py-1 mt-2">💾 Save</button>
-                <a href="index.php" class="btn btn-outline-secondary w-100 py-1 mt-2">Cancel</a>
+                <a href="category_list.php" class="btn btn-outline-secondary w-100 py-1 mt-2">Cancel</a>
             </form>
         </div>
     </div>

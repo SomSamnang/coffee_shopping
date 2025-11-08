@@ -1,5 +1,10 @@
 <?php
+session_start();
 require_once('db_connect.php');
+
+// Current user info
+$currentUser = $_SESSION['username'] ?? null;
+$role = $_SESSION['role'] ?? null;
 
 // --- Fetch all orders ---
 $sql = "SELECT o.id AS order_id, o.total_amount, o.created_at FROM orders o ORDER BY o.created_at DESC";
@@ -44,6 +49,9 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
 .navbar { background: linear-gradient(90deg,#0d6efd,#6610f2); padding:6px 18px; box-shadow:0 3px 8px rgba(0,0,0,0.1);}
 .navbar-brand { font-weight:700;color:#fff;font-size:1.4rem;}
 
+/* Dropdown center */
+.dropdown-menu-center { left: 50% !important; transform: translateX(-50%) !important; }
+
 /* Summary Cards */
 .summary-cards { display:flex; gap:15px; flex-wrap:wrap; margin-bottom:25px; }
 .card-summary { flex:1; min-width:150px; height:140px; border-radius:12px; padding:18px; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; transition:0.2s;}
@@ -64,11 +72,7 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
     padding:10px;
     margin-bottom:30px;
 }
-
-.table thead { 
-    background: linear-gradient(90deg,#0d6efd,#6610f2); 
-    color:#fff;
-}
+.table thead { background: linear-gradient(90deg,#0d6efd,#6610f2); color:#fff; }
 .table thead th { text-align:center; font-weight:600; font-size:0.95rem; }
 .table tbody td { font-size:0.9rem; vertical-align:middle; }
 .table tbody tr:nth-child(odd) { background:#fdfdfd; }
@@ -93,21 +97,39 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
 </head>
 <body>
 
+<!-- Navbar with User Dropdown -->
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
 <div class="container-fluid">
     <a class="navbar-brand" href="#">☕ Orders History</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav gap-2">
-            <li class="nav-item"><a class="nav-link" href="index.php"><i class="bi bi-house"></i> Home</a></li>
-<li class="nav-item">
-    <a style="color:white;" class="nav-link" href="orders.php">
-        <i class="bi bi-basket"></i> Orders
-    </a>
-</li>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+        <ul class="navbar-nav align-items-center">
+            <li class="nav-item"><a class="nav-link" href="orders.php"><i class="bi bi-basket"></i> Orders</a></li>
 
+            <?php if($currentUser): ?>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle me-1" style="color:yellow;"></i> <?= htmlspecialchars($currentUser) ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-center">
+                    <li><a class="dropdown-item" href="profile.php" style="color:blue;font-weight:500;"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
+                    <li><a class="dropdown-item" href="index.php" style="color:blue;font-weight:500;"><i class="bi bi-people-fill me-2" style="color:green;"></i> Home</a></li>
+                    <?php if($role === 'admin'): ?>
+                    <!-- <li><a class="dropdown-item" href="user_list.php" style="color:blue;font-weight:500;"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li> -->
+                    <?php endif; ?>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="logout.php" style="color:blue;font-weight:500;"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
+                </ul>
+            </li>
+            <?php else: ?>
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-light btn-sm" href="login.php">
+                    <i class="bi bi-box-arrow-in-right me-2" style="color:green;"></i> Login
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
     </div>
 </div>
@@ -126,15 +148,12 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
 <div class="table-wrapper mx-auto" style="max-width:900px;">
 <table class="table table-hover table-bordered mb-0 align-middle text-center">
 <thead>
-<thead>
-<tr style="background-color:#0d6efd; color:#eee; text-align:center;">
-    <th style="width:100px; background-color:#0d6efd; color:yellow;">Order ID</th>
-    <th style="width:120px;background-color:#0d6efd; color:yellow;">Total Amount</th>
-    <th style="width:150px;background-color:#0d6efd; color:yellow;">Order Date</th>
+<tr>
+    <th style="width:100px; color:yellow;">Order ID</th>
+    <th style="width:120px; color:yellow;">Total Amount</th>
+    <th style="width:150px; color:yellow;">Order Date</th>
 </tr>
 </thead>
-
-
 <tbody>
 <?php if ($result && $result->num_rows>0):
     while($row = $result->fetch_assoc()): ?>
@@ -159,9 +178,7 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
         <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </div>
-    <div class="modal-body" id="orderModalBody">
-        Loading...
-    </div>
+    <div class="modal-body" id="orderModalBody">Loading...</div>
     <div class="modal-footer">
         <strong id="modalTotal" class="me-auto"></strong>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -198,9 +215,7 @@ document.querySelectorAll('.order-link').forEach(link => {
                 html += "</tbody></table>";
                 modalBody.innerHTML = html;
                 modalTotal.textContent = "Total: $" + parseFloat(data.total).toFixed(2);
-            }else{
-                modalBody.innerHTML = "Error loading order details.";
-            }
+            } else { modalBody.innerHTML = "Error loading order details."; }
         }).catch(err => modalBody.innerHTML = 'Error loading order details');
 
         const orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
