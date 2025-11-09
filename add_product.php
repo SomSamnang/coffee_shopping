@@ -11,31 +11,50 @@ $success = false;
 $active_categories = $conn->query("SELECT * FROM categories WHERE status='active' ORDER BY name ASC");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = trim($_POST['name']);
-    $category_id = $_POST['category_id'];
-    $price = $_POST['price'];
-    $description = trim($_POST['description'] ?? '');
-    $status = $_POST['status'] ?? 'inactive'; // default to inactive if not chosen
+    // Safely get POST data
+    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+    $price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
+    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $status = isset($_POST['status']) ? $_POST['status'] : 'inactive';
     
     // Handle image upload
     $image_name = null;
+    $allowed_extensions = ['jpg', 'jpeg', 'png'];
+
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $image_name = 'product_' . time() . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/' . $image_name);
+        $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+        $original_name = pathinfo($_FILES['image']['name'], PATHINFO_FILENAME);
+
+        // Validate image type
+        if (in_array($ext, $allowed_extensions)) {
+            // Sanitize filename (remove spaces/special chars)
+            $safe_name = preg_replace("/[^a-zA-Z0-9_-]/", "_", $original_name);
+            $image_name = $safe_name . "_" . time() . "." . $ext;
+
+            // Ensure upload folder exists
+            if (!is_dir('uploads')) {
+                mkdir('uploads', 0777, true);
+            }
+
+            move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/' . $image_name);
+        } else {
+            $message = "⚠️ Invalid image format. Only JPG, JPEG, and PNG allowed.";
+        }
     }
 
-    if (!empty($name) && is_numeric($price) && $price >= 0 && !empty($category_id)) {
+    // Validate input fields
+    if ($message === "" && $name !== '' && $category_id > 0 && $price >= 0) {
         $stmt = $conn->prepare("INSERT INTO products (name, category_id, price, description, image, status) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sidsss", $name, $category_id, $price, $description, $image_name, $status);
         if ($stmt->execute()) {
-            $success = true; // mark success
+            $success = true;
         } else {
-            $message = "❌ Error: " . $stmt->error;
+            $message = "❌ Database error: " . $stmt->error;
         }
         $stmt->close();
-    } else {
-        $message = "⚠️ Please fill all required fields correctly.";
+    } else if ($message === "") {
+        $message = "⚠️ Please fill in all required fields correctly.";
     }
 }
 ?>
@@ -57,7 +76,6 @@ body { background-color: #f8f9fa; font-family: "Poppins", sans-serif; }
 .container { max-width: 450px; }
 .btn-outline-secondary { font-size: 0.9rem; border-radius: 6px; }
 img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
-/* Loading overlay */
 #loadingOverlay {
     display: none;
     position: fixed;
@@ -100,12 +118,12 @@ img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
                     <div class="spinner-border text-primary mb-2" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p>✅ Product added successfully! Redirecting to product list...</p>
+                    <p>✅ Product added successfully! Redirecting...</p>
                 </div>
                 <script>
                     setTimeout(function(){
                         window.location.href = "product.php";
-                    }, 1500); // 1.5 seconds
+                    }, 1500);
                 </script>
             <?php else: ?>
             
@@ -116,8 +134,8 @@ img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
                 </div>
 
                 <div class="mb-3">
-                    <label for="category" class="form-label">Category *</label>
-                    <select name="category_id" id="category" class="form-select" required>
+                    <label class="form-label">Category *</label>
+                    <select name="category_id" class="form-select" required>
                         <option value="">-- Select Category --</option>
                         <?php if($active_categories && $active_categories->num_rows > 0): ?>
                             <?php while($cat = $active_categories->fetch_assoc()): ?>
@@ -140,8 +158,9 @@ img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Image</label>
-                    <input type="file" name="image" class="form-control">
+                    <label class="form-label">Image (JPG, JPEG, PNG)</label>
+                    <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png" onchange="previewImage(event)">
+                    <img id="imagePreview" class="preview d-none" alt="Preview">
                 </div>
 
                 <div class="mb-3">
@@ -153,7 +172,7 @@ img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-1">Submit</button>
-                <a href="index.php" class="btn btn-outline-secondary w-100 mt-2 py-1">Back</a>
+                <a href="product.php" class="btn btn-outline-secondary w-100 mt-2 py-1">Back</a>
             </form>
             
             <?php endif; ?>
@@ -166,6 +185,16 @@ img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
 document.getElementById('addProductForm')?.addEventListener('submit', function(){
     document.getElementById('loadingOverlay').style.display = 'block';
 });
+
+// Image preview
+function previewImage(event) {
+    const preview = document.getElementById('imagePreview');
+    const file = event.target.files[0];
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('d-none');
+    }
+}
 </script>
 
 </body>
