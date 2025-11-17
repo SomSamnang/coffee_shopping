@@ -49,7 +49,7 @@ body::-webkit-scrollbar { display: none; }
 .navbar .nav-link { color: #ffffffff !important; font-weight:500; }
 .navbar .nav-link:hover, .navbar .nav-link.active { background: rgba(0, 255, 8, 0.2); border-radius:8px; }
 
-.sticky-filter { position: sticky; top: 56px; z-index:1020; background: #fff; border-bottom:1px solid #ddd; padding:10px 0; }
+.sticky-header-wrapper { position:sticky; top:0; z-index:1050; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
 .category-nav { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
 .category-nav button { border-radius:30px; font-weight:500; cursor:pointer; }
 .category-nav button.active { background-color:#0d6efd; color:#fff; border-color:#0d6efd; }
@@ -63,6 +63,44 @@ body::-webkit-scrollbar { display: none; }
     box-shadow:0 4px 8px rgba(0,0,0,0.08);
     cursor:pointer;
 }
+/* Sticky Filter Box */
+.sticky-filter {
+    position: sticky;
+    top: 80px; /* adjust based on your navbar height */
+    z-index: 999;
+    background: #ffffff;
+    padding: 20px 15px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Title */
+.sticky-filter h3 {
+    margin-bottom: 5px;
+    font-size: 1.7rem;
+}
+
+/* Category Buttons */
+.category-nav button {
+    margin: 3px;
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 14px;
+}
+
+/* Search Box Style */
+.search-box input {
+    border-radius: 30px;
+    padding: 10px 18px;
+    margin-top: 8px;
+}
+
+/* Center items */
+.category-nav {
+    text-align: center;
+}
+
 .product-card:hover { transform: translateY(-5px); }
 .card-title { font-weight:600; font-size:1rem; }
 .card-price { color:#198754; font-weight:bold; margin-top:5px; }
@@ -127,13 +165,18 @@ body::-webkit-scrollbar { display: none; }
 <div class="container">
   <div class="sticky-filter shadow-sm">
     <h3 class="text-center fw-bold text-secondary">☕ Coffee Menu</h3>
+
     <div id="clock"></div>
-    <div class="category-nav mb-2">
+
+    <div class="category-nav mb-2 text-center">
       <button class="btn btn-outline-dark active" data-category="all">All</button>
       <?php foreach($products_by_category as $category => $products): ?>
-      <button class="btn btn-outline-dark" data-category="<?= htmlspecialchars($category) ?>"><?= htmlspecialchars($category) ?></button>
+      <button class="btn btn-outline-dark" data-category="<?= htmlspecialchars($category) ?>">
+        <?= htmlspecialchars($category) ?>
+      </button>
       <?php endforeach; ?>
     </div>
+
     <div class="search-box text-center">
       <input type="text" id="searchBox" class="form-control" placeholder="Search coffee...">
     </div>

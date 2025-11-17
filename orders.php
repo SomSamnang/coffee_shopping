@@ -130,13 +130,11 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
 <?php endif; ?>
 
 <li><hr class="dropdown-divider"></li>
-
 <li>
     <a class="dropdown-item text-danger" href="logout.php">
         <i class="bi bi-box-arrow-right me-2"></i> Logout
     </a>
 </li>
-
 
     </ul>
   <?php else: ?>
