@@ -3,30 +3,39 @@ session_start();
 require_once('db_connect.php');
 
 $message = "";
+$success = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
+    $email_prefix = trim($_POST['email']);
+    $email = $email_prefix;
+    $phone = preg_replace('/\D/', '', trim($_POST['phone'])); // Remove non-digit characters
     $password = $_POST['password'];
     $role = $_POST['role'] ?? 'user';
     $status = $_POST['status'] ?? 'active';
 
-    if ($username && $password && $role) {
+    if ($username && $email_prefix && $password && $role && $phone) {
+        // Check if username exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE username=?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
+
         if ($stmt->num_rows > 0) {
             $message = "<div class='alert alert-danger'>Username already exists!</div>";
         } else {
             $hashed = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (username, password, role, status) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $username, $hashed, $role, $status);
+            $stmt = $conn->prepare("INSERT INTO users (username, email, phone, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssss", $username, $email, $phone, $hashed, $role, $status, $password);
+
             if ($stmt->execute()) {
-                $message = "<div class='alert alert-success'>User registered successfully! <a href='login.php'>Login here</a></div>";
+                $success = true;
+                $message = "<div class='alert alert-success text-center fw-bold'>User registered successfully!</div>";
             } else {
                 $message = "<div class='alert alert-danger'>Failed to register user.</div>";
             }
         }
+        $stmt->close();
     } else {
         $message = "<div class='alert alert-warning'>Please fill all fields.</div>";
     }
@@ -42,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-/* Page background */
 body {
     background: linear-gradient(135deg, #74ebd5, #ACB6E5);
     font-family: 'Poppins', sans-serif;
@@ -53,134 +61,177 @@ body {
     margin: 0;
     flex-direction: column;
 }
-
-/* Card */
 .card-register {
     background: #fff;
-    border-radius: 25px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    padding: 40px 30px;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
-.card-register:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
-}
-
-/* Heading */
 .card-register h2 {
     font-weight: 700;
     font-size: 2rem;
+    margin-bottom: 20px;
     background: linear-gradient(90deg,#0d6efd,#6610f2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 30px;
 }
-
-/* Input Groups */
 .input-group-text {
-    background-color: #f1f3f5;
     border: none;
-    transition: 0.3s;
-    font-size: 1.2rem;
+    width: 50px;
+    justify-content: center;
 }
-.input-group-text.username-icon { color: #0d6efd; }
-.input-group-text.password-icon { color: #6610f2; }
-.input-group-text.role-icon { color: #0dcaf0; }
-.input-group-text.status-icon { color: #198754; }
-
-.input-group-text:hover { color: #ff4d6d; }
-
-.form-control, .form-select {
-    border-radius: 12px;
-    border: 1px solid #ced4da;
-    transition: 0.3s;
-}
-.form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
-    border-color: #0d6efd;
-}
-
-/* Buttons */
-.btn-primary {
-    background: linear-gradient(90deg,#0d6efd,#6610f2);
-    border: none;
-    font-weight: 600;
+.input-icon-username { color: #0d6efd; }
+.input-icon-email { color: #6610f2; }
+.input-icon-password { color: #dc3545; }
+.input-icon-role { color: #198754; }
+.input-icon-status { color: #fd7e14; }
+.input-icon-phone { color: #6f42c1; }
+.form-control {
     border-radius: 50px;
-    padding: 12px 0;
-    transition: 0.3s;
 }
-.btn-primary i { margin-right: 5px; }
-.btn-primary:hover { background: linear-gradient(90deg,#6610f2,#0d6efd); }
-
-.btn-link { color: #0d6efd; text-decoration: none; }
-.btn-link i { margin-right: 5px; }
-.btn-link:hover { text-decoration: underline; }
-
-/* Password toggle */
-.password-toggle { cursor: pointer; color: #6610f2; }
-.password-toggle:hover { color: #0d6efd; }
-
-/* Alerts */
-.alert { text-align: left; font-size: 0.9rem; border-radius: 10px; }
-
-/* Footer */
-.footer { margin-top: 20px; font-size: 0.85rem; color: #70707078; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-
-/* Responsive */
-@media (max-width: 500px) {
-    .card-register { padding: 35px 20px; }
-    .card-register h2 { font-size: 1.6rem; }
+select.form-select {
+    border-radius: 50px;
+}
+.btn-custom {
+    border-radius: 50px;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-custom:hover {
+    opacity: 0.9;
+}
+#successOverlay {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    justify-content:center;
+    align-items:center;
+    z-index:1050;
+}
+#successOverlay .box {
+    background:white;
+    padding:35px 40px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 5px 25px rgba(0,0,0,0.3);
 }
 </style>
 </head>
 <body>
 
+<div id="successOverlay">
+    <div class="box">
+        <div class="spinner-border text-success mb-3" style="width:3rem;height:3rem;"></div>
+        <h5 class="text-success fw-bold">Registration Successful!</h5>
+        <p class="text-secondary">Please wait...</p>
+    </div>
+</div>
+
 <div class="card-register">
     <h2><i class="bi bi-person-plus-fill"></i> Create Account</h2>
     <?= $message ?>
+
     <form method="POST">
+
+        <!-- Username -->
         <div class="mb-3 input-group">
-            <span class="input-group-text username-icon"><i class="bi bi-person-fill"></i></span>
+            <span class="input-group-text input-icon-username"><i class="bi bi-person-fill"></i></span>
             <input type="text" name="username" class="form-control" placeholder="Username" required>
         </div>
+
+        <!-- Password -->
         <div class="mb-3 input-group">
-            <span class="input-group-text password-icon"><i class="bi bi-lock-fill"></i></span>
-            <input type="password" name="password" class="form-control" placeholder="Password" id="passwordInput" required>
-            <span class="input-group-text password-toggle" id="togglePassword"><i class="bi bi-eye-fill"></i></span>
+            <span class="input-group-text input-icon-password"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <span class="input-group-text" id="togglePassword"><i class="bi bi-eye-fill"></i></span>
         </div>
+
+        <!-- Email -->
         <div class="mb-3 input-group">
-            <span class="input-group-text role-icon"><i class="bi bi-person-badge-fill"></i></span>
+            <span class="input-group-text input-icon-email"><i class="bi bi-envelope-fill"></i></span>
+            <input type="text" id="emailInput" name="email" class="form-control" placeholder="@cfe.shopping.com" required>
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3 input-group">
+            <span class="input-group-text input-icon-phone"><i class="bi bi-telephone-fill"></i></span>
+            <input type="text" name="phone" id="phoneInput" class="form-control" placeholder="Phone" required>
+        </div>
+
+        <!-- Role -->
+        <div class="mb-3 input-group">
+            <span class="input-group-text input-icon-role"><i class="bi bi-person-badge-fill"></i></span>
             <select name="role" class="form-select" required>
                 <option value="">Select Role</option>
-                <option value="user">Normal User</option>
+                <option value="user">User</option>
                 <option value="admin">Admin</option>
             </select>
         </div>
+
+        <!-- Status -->
         <div class="mb-4 input-group">
-            <span class="input-group-text status-icon"><i class="bi bi-toggle-on"></i></span>
+            <span class="input-group-text input-icon-status"><i class="bi bi-toggle-on"></i></span>
             <select name="status" class="form-select" required>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
         </div>
-        <button class="btn btn-primary w-100 mb-3"><i class="bi bi-person-plus-fill"></i> Register</button>
-        <a href="login.php" class="btn btn-link"><i class="bi bi-box-arrow-in-right"></i> Already have an account? Login</a>
-        <div class="footer"> &copy; 2025 Coffee Shop. All rights reserved.</div>
+
+        <!-- Buttons -->
+        <button class="btn btn-primary w-100 mb-3 btn-custom">
+            <i class="bi bi-person-plus-fill me-2"></i> Register
+        </button>
+
+        <a href="user_list.php" class="btn w-100 mb-3 btn-custom" style="background: linear-gradient(90deg,yellow,green); color:#fff;">
+            <i class="bi bi-arrow-left-circle-fill me-2"></i> Back
+        </a>
+
+        <div class="footer text-muted">&copy; 2025 Coffee Shop. All rights reserved.</div>
     </form>
 </div>
 
 <script>
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('passwordInput');
-togglePassword.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    togglePassword.innerHTML = type === 'password' ? '<i class="bi bi-eye-fill"></i>' : '<i class="bi bi-eye-slash-fill"></i>';
+// Password show/hide
+document.getElementById('togglePassword').onclick = function () {
+    const input = document.querySelector('input[name="password"]');
+    const type = input.type === "password" ? "text" : "password";
+    input.type = type;
+    this.innerHTML = type === "password" ? '<i class="bi bi-eye-fill"></i>' : '<i class="bi bi-eye-slash-fill"></i>';
+};
+
+// Auto append email domain
+const emailInput = document.getElementById('emailInput');
+const domain = '@cfe.shopping.com';
+emailInput.addEventListener('input', () => {
+    let value = emailInput.value.replace(domain,'');
+    emailInput.value = value + domain;
+    emailInput.setSelectionRange(value.length, value.length);
 });
+
+// Auto format phone input with spaces
+const phoneInput = document.getElementById('phoneInput');
+phoneInput.addEventListener('input', () => {
+    let digits = phoneInput.value.replace(/\D/g, '');
+    if(digits.length <= 3){
+        phoneInput.value = digits;
+    } else if(digits.length <= 6){
+        phoneInput.value = digits.slice(0,3) + ' ' + digits.slice(3);
+    } else {
+        phoneInput.value = digits.slice(0,3) + ' ' + digits.slice(3,6) + ' ' + digits.slice(6,10);
+    }
+});
+
+// Show success overlay & redirect
+<?php if ($success): ?>
+document.getElementById('successOverlay').style.display = "flex";
+setTimeout(() => { window.location.href = "user_list.php"; }, 2000);
+<?php endif; ?>
 </script>
 
 </body>

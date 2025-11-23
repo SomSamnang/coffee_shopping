@@ -68,7 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
+    body { background: #f8fafc; font-family: 'Poppins', sans-serif; }
+html, body { height: 100%; overflow: auto; scrollbar-width: none; }
+body::-webkit-scrollbar { display: none; }
+
 .sticky-header-wrapper { position:sticky; top:0; z-index:1050; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
 .header-content { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:linear-gradient(90deg,#0d6efd,#6610f2); flex-wrap:wrap; gap:10px; color:#fff; }
 .header-content h1 { font-size:1.5rem; margin:0; }
@@ -98,6 +101,7 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
 .qty-increase { background:#198754 !important; color:#fff !important; }
 .qty-decrease { background:#dc3545 !important; color:#fff !important; }
 .qty-clear { background:#ffc107 !important; color:#000 !important; }
+
 @media(max-width:768px){ .header-content{flex-direction:column;align-items:flex-start;gap:8px;} .search-input{width:100%; margin-top:8px;} .item-img{height:90px;} }
 </style>
 </head>
@@ -114,29 +118,42 @@ body { background:#f8f9fa; font-family:Poppins,sans-serif; margin:0; }
     <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-person-circle text-primary"></i> <?= htmlspecialchars($_SESSION['username']) ?>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-       <li>
-    <a class="dropdown-item" href="profile.php">
-        <i class="bi bi-person me-2" style="color:blue;"></i> Profile
-    </a>
-</li>
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
 
-<?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <!-- Profile -->
     <li>
-        <a class="dropdown-item" href="index.php">
-            <i class="bi bi-house-door me-2" style="color:green;"></i> Home
+        <a class="dropdown-item" href="profile.php">
+            <i class="bi bi-person me-2 text-primary"></i> Profile
         </a>
     </li>
-<?php endif; ?>
 
-<li><hr class="dropdown-divider"></li>
-<li>
-    <a class="dropdown-item text-danger" href="logout.php">
-        <i class="bi bi-box-arrow-right me-2"></i> Logout
-    </a>
-</li>
+    <!-- Order History -->
+    <li>
+        <a class="dropdown-item" href="orders_history.php">
+            <i class="bi bi-clock-history me-2 text-warning"></i> History Orders
+        </a>
+    </li>
 
-    </ul>
+    <!-- Only for Admin -->
+    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <li>
+            <a class="dropdown-item" href="index.php">
+                <i class="bi bi-house-door me-2 text-success"></i> Home
+            </a>
+        </li>
+    <?php endif; ?>
+
+    <li><hr class="dropdown-divider"></li>
+
+    <!-- Logout -->
+    <li>
+        <a class="dropdown-item text-danger" href="logout.php">
+            <i class="bi bi-box-arrow-right me-2"></i> Logout
+        </a>
+    </li>
+
+</ul>
+
   <?php else: ?>
     <a class="btn btn-outline-light btn-sm" href="login.php"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
   <?php endif; ?>

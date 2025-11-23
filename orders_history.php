@@ -105,32 +105,54 @@ body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-        <ul class="navbar-nav align-items-center">
-            <li class="nav-item"><a class="nav-link" href="orders.php"><i class="bi bi-basket"></i> Orders</a></li>
+<ul class="navbar-nav align-items-center">
 
-            <?php if($currentUser): ?>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle me-1" style="color:yellow;"></i> <?= htmlspecialchars($currentUser) ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-center">
-                    <li><a class="dropdown-item" href="profile.php" style="color:blue;font-weight:500;"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
-                    <li><a class="dropdown-item" href="index.php" style="color:blue;font-weight:500;"><i class="bi bi-people-fill me-2" style="color:green;"></i> Home</a></li>
-                    <?php if($role === 'admin'): ?>
-                    <!-- <li><a class="dropdown-item" href="user_list.php" style="color:blue;font-weight:500;"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li> -->
-                    <?php endif; ?>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="logout.php" style="color:blue;font-weight:500;"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
-                </ul>
-            </li>
-            <?php else: ?>
-            <li class="nav-item">
-                <a class="nav-link btn btn-outline-light btn-sm" href="login.php">
-                    <i class="bi bi-box-arrow-in-right me-2" style="color:green;"></i> Login
+    <?php if($currentUser): ?>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-1 text-warning"></i>
+            <?= htmlspecialchars($currentUser) ?>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+            <!-- Profile -->
+            <li>
+                <a class="dropdown-item" href="profile.php">
+                    <i class="bi bi-person me-2 text-primary"></i> Profile
                 </a>
             </li>
-            <?php endif; ?>
+
+            <!-- Orders -->
+            <li>
+                <a class="dropdown-item" href="orders.php">
+                    <i class="bi bi-basket me-2 text-success"></i> Orders
+                </a>
+            </li>
+
+        
+            <li><hr class="dropdown-divider"></li>
+
+            <!-- Logout -->
+            <li>
+                <a class="dropdown-item text-danger" href="logout.php">
+                    <i class="bi bi-box-arrow-right me-2 text-danger"></i> Logout
+                </a>
+            </li>
+
         </ul>
+    </li>
+
+    <?php else: ?>
+    <li class="nav-item">
+        <a class="nav-link btn btn-outline-light btn-sm" href="login.php">
+            <i class="bi bi-box-arrow-in-right me-2 text-success"></i> Login
+        </a>
+    </li>
+    <?php endif; ?>
+
+</ul>
+
     </div>
 </div>
 </nav>
