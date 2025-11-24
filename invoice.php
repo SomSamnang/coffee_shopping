@@ -36,22 +36,7 @@ if ($order_id > 0) {
 <meta charset="UTF-8">
 <title>Invoice #<?= str_pad($order_id,4,'0',STR_PAD_LEFT) ?></title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-body { background-color:#f4f6f9; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; margin:0; padding:20px; color:#333; }
-.invoice-box { max-width: 500px; height:auto; margin:0 auto; padding:30px; background:#fff; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.05); }
-.invoice-header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #ddd; padding-bottom:15px; margin-bottom:20px; }
-.invoice-header h1 { font-weight:700; color:#0d6efd; margin-bottom:5px; font-size:1.6rem; }
-.invoice-header p { margin:0; color:#555; font-size:0.9rem; }
-.table th, .table td { padding:12px; vertical-align:middle; }
-.table-striped tbody tr:nth-of-type(odd) { background-color:#f8f9fa; }
-.final-total { font-weight:700; font-size:1.4rem; color:#198754; }
-.table-responsive { border-radius:8px; overflow:hidden; }
-.no-print { text-align:left; margin-top:20px; }
-.no-print .btn { margin:5px; }
-@media print { .no-print { display:none; } }
-html, body { height:100%; overflow:auto; scrollbar-width:none; }
-body::-webkit-scrollbar { display:none; }
-</style>
+<link rel="stylesheet" href="style/invoice.css">
 </head>
 <body>
 
@@ -64,9 +49,9 @@ body::-webkit-scrollbar { display:none; }
             <p>Date: <?= date('Y-m-d H:i:s', strtotime($order['created_at'])) ?></p>
         </div>
         <div class="text-end">
-            <h5 class="text-primary fw-bold">☕ COFFEE SHOPPING</h5>
-            <p>123 Coffee Lane</p>
-            <p>Samnang@dailyShopping.com</p>
+            <h5 class="text-primary fw-bold">☕ RELAX COFFEE </h5>
+            <p>No.123,Street 45, Toul Kork, Phnom Penh</p>
+            <p>Samnang168@cfe-Shopping.com</p>
         </div>
     </div>
 

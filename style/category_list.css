@@ -1,0 +1,193 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f8fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar */
+.navbar {
+  color: white;
+  padding: 0.5rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.navbar-brand {
+  color: white;
+  font-weight: 600;
+}
+.navbar-nav .nav-link {
+  color: white;
+  margin-right: 8px;
+  font-weight: 500;
+}
+.navbar-nav .nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* Dropdown center under button */
+.dropdown-menu-center {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Header */
+header {
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+  color: white;
+  padding: 2px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffffff, #fdd10d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons and Search Container */
+.nav-buttons a {
+  margin-left: 8px;
+  text-decoration: none;
+  color: #0d6efd;
+  background: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.nav-buttons a:hover {
+  background: #f1f1f1;
+}
+
+/* Search container in header */
+.search-container {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 250px;
+}
+.search-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.95rem;
+}
+.search-container i {
+  color: #0d6efd;
+}
+
+/* Container */
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+/* Add Category button */
+.btn-add {
+  background-color: #198754;
+  color: white;
+  margin-bottom: 10px;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 10px;
+
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+.btn-add:hover {
+  background-color: #157347;
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: white;
+}
+
+/* Table */
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: center;
+}
+.table th {
+  background-color: #f4f4f4;
+}
+.table tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* Status badge */
+.badge-active {
+  background-color: #0f5132;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+.badge-inactive {
+  background-color: #842029;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+/* Action Buttons */
+.btn-action {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-right: 5px;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+}
+.edit-btn {
+  background-color: #2196f3;
+}
+.edit-btn:hover {
+  background-color: #1976d2;
+}
+.delete-btn {
+  background-color: #f44336;
+}
+.delete-btn:hover {
+  background-color: #c62828;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .search-container {
+    width: 100%;
+  }
+  .nav-buttons {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+}

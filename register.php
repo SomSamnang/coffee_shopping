@@ -50,78 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body {
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    font-family: 'Poppins', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    flex-direction: column;
-}
-.card-register {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-    padding: 40px 30px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-}
-.card-register h2 {
-    font-weight: 700;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg,#0d6efd,#6610f2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.input-group-text {
-    border: none;
-    width: 50px;
-    justify-content: center;
-}
-.input-icon-username { color: #0d6efd; }
-.input-icon-email { color: #6610f2; }
-.input-icon-password { color: #dc3545; }
-.input-icon-role { color: #198754; }
-.input-icon-status { color: #fd7e14; }
-.input-icon-phone { color: #6f42c1; }
-.form-control {
-    border-radius: 50px;
-}
-select.form-select {
-    border-radius: 50px;
-}
-.btn-custom {
-    border-radius: 50px;
-    padding: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-.btn-custom:hover {
-    opacity: 0.9;
-}
-#successOverlay {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(0,0,0,0.55);
-    display: none;
-    justify-content:center;
-    align-items:center;
-    z-index:1050;
-}
-#successOverlay .box {
-    background:white;
-    padding:35px 40px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 5px 25px rgba(0,0,0,0.3);
-}
-</style>
+<link rel="stylesheet" href="style/register.css">
 </head>
 <body>
 

@@ -1,0 +1,148 @@
+/* ---------------------------------
+   GLOBAL
+--------------------------------- */
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(120deg, #ffe0b3, #ffcc80, #ff9933, #ffc266);
+  background-size: 400% 400%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: gradientBG 15s ease infinite;
+  padding: 20px;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ---------------------------------
+   CARD
+--------------------------------- */
+.login-card {
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  padding: 30px 25px;
+  width: 100%;
+  max-width: 420px;
+  animation: fadeIn 0.7s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------
+   HEADER
+--------------------------------- */
+.login-card h3 {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+  padding: 10px 0;
+  border-radius: 12px;
+  font-size: 1.4rem;
+}
+
+/* ---------------------------------
+   FORM
+--------------------------------- */
+.input-icon {
+  position: relative;
+}
+.input-icon i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+}
+.toggle-password {
+  right: 15px !important;
+  left: auto !important;
+  cursor: pointer;
+}
+
+.form-control {
+  border-radius: 12px;
+  padding: 14px 15px 14px 45px;
+  font-size: 1rem;
+}
+
+/* BUTTONS */
+.btn-custom {
+  background: linear-gradient(90deg, #ff9933, #ff8000);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.btn-custom:hover {
+  background: linear-gradient(90deg, #ff8000, #ff9933);
+}
+
+/* ALERTS */
+.cool-alert {
+  background: #ffe1e1;
+  border-left: 4px solid #ff3b3b;
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: #b30000;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-bottom: 15px;
+  transition: all 0.4s ease;
+}
+
+/* LOADING OVERLAY */
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+#loadingOverlay .spinner-border {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+#loadingOverlay p {
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #ff660074;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.8rem;
+  color: #666;
+}

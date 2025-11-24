@@ -105,25 +105,9 @@ unset($_SESSION['success_msg']);
 <title>User Management</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body { background-color: #f5f6fa; font-family: 'Poppins', sans-serif; }
-.card { border-radius: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-.table-hover tbody tr:hover { background-color: #e9f5ff; }
-.form-control, .form-select { border-radius: 10px; padding: 10px; }
-.btn-primary, .btn-success, .btn-warning, .btn-danger { border-radius: 10px; }
-.modal-content { border-radius: 15px; }
-.password-text { display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer; font-family: monospace; }
-.badge-admin { background-color: #ff4757; }
-.badge-user { background-color: #1e90ff; }
-.badge-active { background-color: #2ed573; }
-.badge-inactive { background-color: #57606f; }
-#successOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); display:none; justify-content:center; align-items:center; z-index:1055;}
-#successOverlay .overlay-content { background:white; padding:25px 45px; border-radius:12px; text-align:center; box-shadow:0 5px 20px rgba(0,0,0,0.2); font-weight:500; }
-#usersContainer { transition: all 0.3s ease; }
-</style>
+<link rel="stylesheet" href="style/user_list.css">
 </head>
 <body>
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background: linear-gradient(90deg, #4bcffa, #0d6efd);">
 <div class="container">
@@ -157,7 +141,7 @@ body { background-color: #f5f6fa; font-family: 'Poppins', sans-serif; }
 <div class="card p-4 shadow-sm mb-3">
 <div class="d-flex justify-content-between align-items-center mb-3">
 <h4 class="text-primary"><i class="bi bi-people"></i> Users List</h4>
-<a href="#" id="addUserBtn" class="btn btn-primary shadow-sm px-3">
+<a href="register.php" id="addUserBtn" class="btn btn-primary shadow-sm px-3">
   <i class="bi bi-person-plus-fill me-1"></i> Create User
 </a>
 </div>

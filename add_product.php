@@ -65,33 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Add Product</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <link rel="stylesheet" href="<?= $bootstrap_cdn ?>">
-<style>
-body { background-color: #f8f9fa; font-family: "Poppins", sans-serif; }
-.card { border: none; border-radius: 12px; }
-.card-header { background: linear-gradient(90deg, #6f42c1, #0d6efd); color: white; text-align: center; padding: 14px 10px; border-top-left-radius: 12px; border-top-right-radius: 12px; }
-.btn-primary { background-color: #0d6efd; border: none; border-radius: 6px; font-weight: 500; font-size: 0.95rem; }
-.btn-primary:hover { background-color: #0b5ed7; }
-.form-label { font-weight: 600; font-size: 0.9rem; }
-.form-control, .form-select { padding: 6px 10px; font-size: 0.9rem; }
-.container { max-width: 450px; }
-.btn-outline-secondary { font-size: 0.9rem; border-radius: 6px; }
-img.preview { width: 150px; margin-top: 10px; border-radius: 6px; }
-#loadingOverlay {
-    display: none;
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(255,255,255,0.7);
-    z-index: 9999;
-    text-align: center;
-}
-#loadingOverlay .spinner-border {
-    position: absolute;
-    top:50%; left:50%;
-    transform: translate(-50%, -50%);
-    width: 3rem;
-    height: 3rem;
-}
-</style>
+<link rel="stylesheet" href="style/add_product.css">
 </head>
 <body>
 

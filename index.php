@@ -40,61 +40,15 @@ $categoryColors = [
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body { background: #f8fafc; font-family: 'Poppins', sans-serif; }
-html, body { height: 100%; overflow: auto; scrollbar-width: none; }
-body::-webkit-scrollbar { display: none; }
 
-.navbar { background: linear-gradient(90deg, #6f42c1, #0d6efd); position: sticky; top:0; z-index:1030; }
-.navbar .nav-link { color: #ffffffff !important; font-weight:500; }
-.navbar .nav-link:hover, .navbar .nav-link.active { background: rgba(0, 255, 8, 0.2); border-radius:8px; }
-
-.sticky-filter { position: sticky; top: 56px; z-index:1020; background: #fff; border-bottom:1px solid #ddd; padding:10px 0; }
-.category-nav { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
-.category-nav button { border-radius:30px; font-weight:500; cursor:pointer; }
-.category-nav button.active { background-color:#0d6efd; color:#fff; border-color:#0d6efd; }
-.search-box { max-width:300px; margin:10px auto; }
-
-.product-card {
-    border-radius:15px;
-    padding:15px;
-    text-align:center;
-    transition:0.3s;
-    box-shadow:0 4px 8px rgba(0,0,0,0.08);
-    cursor:pointer;
-}
-.sticky-filter {
-    position: sticky;
-    top: 56px; 
-    z-index: 999;
-    background: #ffffff;
-    padding: 15px 10px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.product-card:hover { transform: translateY(-5px); }
-.card-title { font-weight:600; font-size:1rem; }
-.card-price { color:#198754; font-weight:bold; margin-top:5px; }
-.card-desc { font-size:0.85rem; color:#555; margin-top:5px; }
-.card-img { width:200px; height:150px; object-fit:cover; border-radius:5%; margin:10px auto 8px; display:block; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-
-#clock { text-align:center; font-weight:600; color:#555; margin:10px 0; }
-
-@media (max-width:768px) {
-  .product-card { padding:10px; }
-  .category-nav { overflow-x:auto; white-space:nowrap; padding-bottom:5px; }
-  .category-nav::-webkit-scrollbar { display:none; }
-  .card-img { width:70px; height:70px; }
-}
-</style>
+<link rel="stylesheet" href="style/index.css">
 </head>
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="index.php"><i class="bi bi-cup-hot"></i> Coffee POS</a>
+    <a class="navbar-brand fw-bold" href="index.php"><i class="bi bi-cup-hot"></i> Relax Coffee</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -118,6 +72,7 @@ body::-webkit-scrollbar { display: none; }
            
                 <?php if($role === 'admin'): ?>
                 <li><a class="dropdown-item" href="user_list.php"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li>
+                
                 <?php endif; ?>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
@@ -135,25 +90,37 @@ body::-webkit-scrollbar { display: none; }
 
 <!-- Sticky filter -->
 <div class="container">
-  <div class="sticky-filter shadow-sm">
-    <h3 class="text-center fw-bold text-secondary">☕ Coffee Menu</h3>
+<div class="sticky-filter shadow-sm">
 
+    <h3 class="text-center fw-bold text-secondary">☕ Coffee Menu</h3>
     <div id="clock"></div>
 
+    <!-- Category Buttons -->
     <div class="category-nav mb-2 text-center">
-      <button class="btn btn-outline-dark active" data-category="all">All</button>
-      <?php foreach($products_by_category as $category => $products): ?>
-      <button class="btn btn-outline-dark" data-category="<?= htmlspecialchars($category) ?>">
-        <?= htmlspecialchars($category) ?>
-      </button>
-      <?php endforeach; ?>
+        <button class="btn btn-outline-dark active" data-category="all">All</button>
+
+        <?php foreach($products_by_category as $category => $products): ?>
+            <button class="btn btn-outline-dark" data-category="<?= htmlspecialchars($category) ?>">
+                <?= htmlspecialchars($category) ?>
+            </button>
+        <?php endforeach; ?>
     </div>
 
-    <div class="search-box text-center">
-      <input type="text" id="searchBox" class="form-control" placeholder="Search coffee...">
+<!-- Search Input -->
+<div class="text-center mb-3">
+    <div class="position-relative w-75 mx-auto">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search coffee...">
+
+        <!-- Icon on the right -->
+        <i class="bi bi-search position-absolute" 
+           style="right: 15px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #777;"></i>
     </div>
-  </div>
 </div>
+
+
+</div>
+
+
 
 <!-- Product Grid -->
 <div class="container mt-3">

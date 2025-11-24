@@ -42,58 +42,7 @@ $top_qty  = $top_product ? $top_product['sold_today'] : 0;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body { background:#f5f6fa; font-family:'Poppins',sans-serif; margin:0; }
-
-/* Navbar */
-.navbar { background: linear-gradient(90deg,#0d6efd,#6610f2); padding:6px 18px; box-shadow:0 3px 8px rgba(0,0,0,0.1);}
-.navbar-brand { font-weight:700;color:#fff;font-size:1.4rem;}
-
-/* Dropdown center */
-.dropdown-menu-center { left: 50% !important; transform: translateX(-50%) !important; }
-
-/* Summary Cards */
-.summary-cards { display:flex; gap:15px; flex-wrap:wrap; margin-bottom:25px; }
-.card-summary { flex:1; min-width:150px; height:140px; border-radius:12px; padding:18px; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; transition:0.2s;}
-.card-summary:hover { transform:translateY(-3px); box-shadow:0 6px 16px rgba(0,0,0,0.15);}
-.card-summary h5 { font-weight:700;margin-bottom:10px;font-size:1.05rem; }
-.card-summary p { font-size:1.3rem; font-weight:700;margin:0;}
-.card-orders { background:#28a745; } 
-.card-total { background:#0d6efd; } 
-.card-today { background:#ffc107;color:#222;} 
-.card-top { background:#dc3545; } 
-
-/* Orders Table */
-.table-wrapper { 
-    background:#fff; 
-    border-radius:12px; 
-    box-shadow:0 4px 12px rgba(0,0,0,0.05); 
-    overflow-x:auto;
-    padding:10px;
-    margin-bottom:30px;
-}
-.table thead { background: linear-gradient(90deg,#0d6efd,#6610f2); color:#fff; }
-.table thead th { text-align:center; font-weight:600; font-size:0.95rem; }
-.table tbody td { font-size:0.9rem; vertical-align:middle; }
-.table tbody tr:nth-child(odd) { background:#fdfdfd; }
-.table tbody tr:nth-child(even) { background:#f7f9fc; }
-.table tbody tr:hover { background:#e0f0ff; transition:0.2s; }
-.order-link { display:inline-block; padding:4px 8px; font-weight:600; color:#0d6efd; text-decoration:none; border-radius:6px; background:#e8f0ff; }
-.order-link:hover { background:#cce4ff; }
-
-/* Modal Table */
-.modal-body table { width:100%; border-collapse:collapse; font-size:0.9rem; }
-.modal-body th, .modal-body td { padding:8px 10px; border-bottom:1px solid #ddd; text-align:left; }
-.modal-body th { background:#f8f9fa; font-weight:600; }
-.modal-body td { word-break: break-word; }
-
-/* Responsive */
-@media(max-width:768px){
-  .summary-cards { flex-direction:column; }
-  .table-wrapper { padding:5px; }
-  .table thead th, .table tbody td { font-size:0.85rem; padding:5px 8px; }
-}
-</style>
+<link rel="stylesheet" href="style/orders_history.css">
 </head>
 <body>
 

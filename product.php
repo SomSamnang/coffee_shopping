@@ -24,33 +24,7 @@ if (!$result) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-/* Keep your previous styles here */
-body { background-color: #f7f8fa; font-family: 'Poppins', sans-serif; margin:0; }
-header { background: linear-gradient(90deg, #0d6efd, #6610f2); color:white; padding:9px 18px; position: sticky; top:0; z-index:1000; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:2px solid rgba(255,255,255,0.2); }
-header h1 { margin:0; font-size:1.6rem; font-weight:700; background: linear-gradient(90deg,#fff,#fdd10d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.nav-buttons a { margin-left:8px; }
-.search-container { background:#fff; padding:6px 12px; border-radius:12px; display:flex; align-items:center; gap:8px; max-width:250px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-.search-container input { border:none; outline:none; flex:1; font-size:0.95rem; }
-.search-container i { color:#0d6efd; }
-.container { max-width:1000px; margin:30px auto; }
-.card { border:none; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
-.card-body { padding:25px; }
-.table { border-radius:12px; overflow:hidden; border:1px solid #dee2e6; }
-.table thead th { text-align:center; background-color:#0d6efd; color:#fff; border:none; font-weight:600; }
-.table tbody td { text-align:center; vertical-align:middle; background:#fff; }
-.table-hover tbody tr:hover { background:#f1f4ff; transition:0.2s; }
-.btn { border-radius:8px; font-size:0.85rem; font-weight:500; }
-.btn-edit { background:#198754; color:white; } .btn-edit:hover { background:#157347; }
-.btn-delete { background:#dc3545; color:white; } .btn-delete:hover { background:#b02a37; }
-.btn-add { background:#0d6efd; color:white; } .btn-add:hover { background:#0b5ed7; }
-.no-products { text-align:center; font-size:1.1rem; color:#6c757d; margin:20px 0; }
-.badge-active { background-color:#198754; color:#fff; }
-.badge-inactive { background-color:#6c757d; color:#fff; }
-html,body { height:100%; overflow:auto; scrollbar-width:none; }
-body::-webkit-scrollbar { display:none; }
-img.product-img { max-width:80px; border-radius:8px; }
-</style>
+<link rel="stylesheet" href="style/product.css">
 </head>
 <body>
 
@@ -64,11 +38,6 @@ img.product-img { max-width:80px; border-radius:8px; }
         <i class="bi bi-search"></i>
     </div>
 
-    <!-- Nav Buttons -->
-    <div class="nav-buttons d-flex gap-1">
-        <a href="add_product.php" class="btn btn-add btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Product</a>
-    
-    </div>
 
    <!-- User Dropdown / Login -->
 <ul class="nav">
@@ -86,6 +55,13 @@ img.product-img { max-width:80px; border-radius:8px; }
                     <i class="bi bi-person me-2" style="color:blue;"></i> Profile
                 </a>
             </li>
+             <!-- Category -->
+            <li>
+                <a class="dropdown-item" href="category_list.php" style="color:blue; font-weight:500;">
+                    <i class="bi bi-list-ul me-2" style="color:blue;"></i> Category
+                </a>
+            </li>
+
 
             <!-- Home -->
 <li>
@@ -132,7 +108,14 @@ img.product-img { max-width:80px; border-radius:8px; }
 
 <div class="container">
 <div class="card">
+    
 <div class="card-body">
+        <!-- Nav Buttons -->
+      <div class="nav-buttons d-flex gap-1 mb-3">
+        <a href="add_product.php" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-circle me-1"></i> Add Product
+        </a>
+      </div>
 <?php if ($result->num_rows > 0): ?>
 <div class="table-responsive">
 <table class="table table-hover align-middle shadow-sm" id="productTable">
