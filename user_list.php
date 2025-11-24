@@ -15,21 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($_POST['id'] ?? 0);
         $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
-        $phone = trim($_POST['phone'] ?? '');
         $password = $_POST['password'] ?? '';
         $role = $_POST['role'] ?? '';
         $status = $_POST['status'] ?? 'active';
 
-        if ($username && $email && $phone && $role && $status) {
+        if ($username && $email && $role && $status) {
             if ($id > 0) {
                 // Update user
                 if ($password) {
                     $hashed = password_hash($password, PASSWORD_DEFAULT);
-                    $stmt = $conn->prepare("UPDATE users SET username=?, email=?, phone=?, password=?, role=?, status=?, display_password=? WHERE id=?");
-                    $stmt->bind_param("sssssssi", $username, $email, $phone, $hashed, $role, $status, $password, $id);
+                    $stmt = $conn->prepare("UPDATE users SET username=?, email=?, password=?, role=?, status=?, display_password=? WHERE id=?");
+                    $stmt->bind_param("ssssssi", $username, $email, $hashed, $role, $status, $password, $id);
                 } else {
-                    $stmt = $conn->prepare("UPDATE users SET username=?, email=?, phone=?, role=?, status=? WHERE id=?");
-                    $stmt->bind_param("sssssi", $username, $email, $phone, $role, $status, $id);
+                    $stmt = $conn->prepare("UPDATE users SET username=?, email=?, role=?, status=? WHERE id=?");
+                    $stmt->bind_param("ssssi", $username, $email, $role, $status, $id);
                 }
                 $stmt->execute();
                 $stmt->close();
@@ -44,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['success_msg'] = "Username already exists.";
                 } else {
                     $hashed = password_hash($password, PASSWORD_DEFAULT);
-                    $stmt = $conn->prepare("INSERT INTO users (username, email, phone, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("sssssss", $username, $email, $phone, $hashed, $role, $status, $password);
+                    $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->bind_param("ssssss", $username, $email, $hashed, $role, $status, $password);
                     $stmt->execute();
                     $stmt->close();
                     $_SESSION['success_msg'] = "User added successfully.";
@@ -62,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Reset Password
     if (isset($_POST['reset_password_modal'])) {
         $user_id = intval($_POST['reset_user_id']);
-        $new_pass = $_POST['new_password'];
-        $confirm_pass = $_POST['confirm_password'];
+        $new_pass = $_POST['new_password'] ?? '';
+        $confirm_pass = $_POST['confirm_password'] ?? '';
 
         if ($new_pass && $new_pass === $confirm_pass) {
             $hashed = password_hash($new_pass, PASSWORD_DEFAULT);
@@ -78,22 +77,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: user_list.php");
         exit;
     }
-}
 
-// Delete user
-if (isset($_GET['delete'])) {
-    $del_id = intval($_GET['delete']);
-    $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
-    $stmt->bind_param("i", $del_id);
-    $stmt->execute();
-    $stmt->close();
-    $_SESSION['success_msg'] = "User deleted successfully.";
-    header("Location: user_list.php");
-    exit;
+    // Delete user
+    if (isset($_POST['delete_user_id'])) {
+        $del_id = intval($_POST['delete_user_id']);
+        $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+        $stmt->bind_param("i", $del_id);
+        $stmt->execute();
+        $stmt->close();
+        $_SESSION['success_msg'] = "User deleted successfully.";
+        header("Location: user_list.php");
+        exit;
+    }
 }
 
 // Fetch all users
-$userResult = $conn->query("SELECT id, username, email, phone, role, status, created_at, display_password FROM users ORDER BY id DESC");
+$userResult = $conn->query("SELECT id, username, email, role, status, created_at, display_password FROM users ORDER BY id DESC");
 $success_msg = $_SESSION['success_msg'] ?? '';
 unset($_SESSION['success_msg']);
 ?>
@@ -117,7 +116,16 @@ unset($_SESSION['success_msg']);
 </button>
 <div class="collapse navbar-collapse" id="navbarContent">
 <ul class="navbar-nav ms-auto align-items-center">
-<li class="nav-item me-3"><input class="form-control form-control-sm" type="search" placeholder="Search user..." id="userSearch" style="border-radius:20px;"></li>
+<li class="nav-item me-3">
+  <div style="position: relative; width: 200px;"> 
+    <input type="text" id="userSearch" class="form-control form-control-sm" 
+           placeholder="Search..." 
+           style="border-radius: 10px; padding-right: 30px; height: 30px; font-size: 0.85rem;">
+    <i class="bi bi-search" 
+       style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #6c757d; font-size: 0.9rem;"></i>
+  </div>
+</li>
+
 <?php if($_SESSION['username']): ?>
 <li class="nav-item dropdown">
 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color:white;">
@@ -153,7 +161,6 @@ unset($_SESSION['success_msg']);
 <th>ID</th>
 <th>Username</th>
 <th>Email</th>
-<th>Phone</th>
 <th>Password</th>
 <th>Role</th>
 <th>Created At</th>
@@ -165,40 +172,44 @@ unset($_SESSION['success_msg']);
 <?php if($userResult && $userResult->num_rows > 0): ?>
 <?php while($row = $userResult->fetch_assoc()): ?>
 <tr>
-<td><?= $row['id'] ?></td>
-<td class="username"><?= htmlspecialchars($row['username']) ?></td>
-<td><?= htmlspecialchars($row['email']) ?></td>
-<td><?= preg_replace('/(\d{3})(\d{3})(\d{4})/', '$1 $2 $3', preg_replace('/\D/', '', $row['phone'])) ?></td>
-<td class="password-text" data-password="<?= htmlspecialchars($row['display_password']) ?>">
-<span class="password-dots">******</span>
-<i class="bi bi-eye eye-icon"></i>
-</td>
-<td><span class="badge rounded-pill text-white <?= $row['role']==='admin'?'badge-admin':'badge-user' ?>"><?= htmlspecialchars($row['role']) ?></span></td>
-<td><?= date("Y-m-d | h:i A", strtotime($row['created_at'])) ?></td>
-<td><span class="badge rounded-pill text-white <?= $row['status']==='active'?'badge-active':'badge-inactive' ?>"><?= htmlspecialchars($row['status']) ?></span></td>
-<td>
-<button class="btn btn-sm btn-warning resetBtn" data-id="<?= $row['id'] ?>" data-username="<?= htmlspecialchars($row['username']) ?>"><i class="bi bi-arrow-clockwise text-white"></i></button>
-<button class="btn btn-sm btn-primary editBtn" 
-        data-id="<?= $row['id'] ?>" 
-        data-username="<?= htmlspecialchars($row['username']) ?>" 
-        data-email="<?= htmlspecialchars($row['email']) ?>" 
-        data-phone="<?= htmlspecialchars($row['phone']) ?>" 
-        data-password="<?= htmlspecialchars($row['display_password']) ?>" 
-        data-role="<?= $row['role'] ?>" 
-        data-status="<?= $row['status'] ?>">
-<i class="bi bi-pencil-square text-white"></i></button>
-<form method="POST" style="display:inline;" 
-      onsubmit="return confirm('Are you sure you want to delete this user?');">
-    <input type="hidden" name="delete_user_id" value="<?= $row['id'] ?>">
-    <button type="submit" class="btn btn-sm btn-danger deleteBtn">
-        <i class="bi bi-trash text-white"></i>
-    </button>
-</form>
-</td>
+    <td><?= $row['id'] ?></td>
+    <td class="username"><?= htmlspecialchars($row['username']) ?></td>
+    <td><?= htmlspecialchars($row['email']) ?></td>
+    <td class="password-text" data-password="<?= htmlspecialchars($row['display_password']) ?>">
+        <span class="password-dots">******</span>
+        <i class="bi bi-eye eye-icon"></i>
+    </td>
+    <td>
+        <span class="badge rounded-pill text-white <?= $row['role']==='admin'?'badge-admin':'badge-user' ?>">
+            <?= htmlspecialchars($row['role']) ?>
+        </span>
+    </td>
+    <td><?= date("Y-m-d | h:i A", strtotime($row['created_at'])) ?></td>
+    <td>
+        <span class="badge rounded-pill text-white <?= $row['status']==='active'?'badge-active':'badge-inactive' ?>">
+            <?= htmlspecialchars($row['status']) ?>
+        </span>
+    </td>
+    <td>
+        <button class="btn btn-sm btn-warning resetBtn" data-id="<?= $row['id'] ?>" data-username="<?= htmlspecialchars($row['username']) ?>"><i class="bi bi-arrow-clockwise text-white"></i></button>
+        <button class="btn btn-sm btn-primary editBtn" 
+                data-id="<?= $row['id'] ?>" 
+                data-username="<?= htmlspecialchars($row['username']) ?>" 
+                data-email="<?= htmlspecialchars($row['email']) ?>" 
+                data-password="<?= htmlspecialchars($row['display_password']) ?>" 
+                data-role="<?= $row['role'] ?>" 
+                data-status="<?= $row['status'] ?>">
+            <i class="bi bi-pencil-square text-white"></i>
+        </button>
+        <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+            <input type="hidden" name="delete_user_id" value="<?= $row['id'] ?>">
+            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash text-white"></i></button>
+        </form>
+    </td>
 </tr>
 <?php endwhile; ?>
 <?php else: ?>
-<tr><td colspan="9">No users found.</td></tr>
+<tr><td colspan="8">No users found.</td></tr>
 <?php endif; ?>
 </tbody>
 </table>
@@ -215,7 +226,6 @@ unset($_SESSION['success_msg']);
 <input type="hidden" name="user_modal" value="1">
 <div class="mb-3"><label class="form-label">Username</label><input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required></div>
 <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" id="email" class="form-control" placeholder="Enter email" required></div>
-<div class="mb-3"><label class="form-label">Phone</label><input type="text" name="phone" id="phone" class="form-control" placeholder="Enter phone number" required></div>
 <div class="mb-3"><label class="form-label">Password</label><input type="text" name="password" id="password" class="form-control" placeholder="Enter password"></div>
 <div class="mb-3"><label class="form-label">Role</label><select name="role" id="role" class="form-select" required><option value="">Select Role</option><option value="admin">Admin</option><option value="user">User</option></select></div>
 <div class="mb-3"><label class="form-label">Status</label><select name="status" id="status" class="form-select" required><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
@@ -246,7 +256,12 @@ unset($_SESSION['success_msg']);
 </div>
 
 <!-- Success Overlay -->
-<div id="successOverlay"><div class="overlay-content"><div class="spinner-border text-success mb-3"></div><div><?= htmlspecialchars($success_msg) ?></div></div></div>
+<div id="successOverlay">
+    <div class="overlay-content">
+        <div class="spinner-border text-success mb-3"></div>
+        <div><?= htmlspecialchars($success_msg) ?></div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -262,11 +277,10 @@ document.addEventListener('DOMContentLoaded', function(){
     const userModal = new bootstrap.Modal(document.getElementById('userModal'));
     const resetModal = new bootstrap.Modal(document.getElementById('resetModal'));
 
-    // Hide users container when modal is open
     const hideUsers = ()=>usersContainer.style.display='none';
     const showUsers = ()=>usersContainer.style.display='block';
 
-    // Add User Modal
+    // Add User
     document.getElementById('addUserBtn').addEventListener('click',()=>{
         document.getElementById('modalTitle').textContent='Add User';
         document.getElementById('userForm').reset();
@@ -275,14 +289,13 @@ document.addEventListener('DOMContentLoaded', function(){
         userModal.show();
     });
 
-    // Edit User Modal
+    // Edit User
     document.querySelectorAll('.editBtn').forEach(btn=>{
         btn.addEventListener('click',()=>{
             document.getElementById('modalTitle').textContent='Edit User';
             document.getElementById('userId').value=btn.dataset.id;
             document.getElementById('username').value=btn.dataset.username;
             document.getElementById('email').value=btn.dataset.email;
-            document.getElementById('phone').value=btn.dataset.phone;
             document.getElementById('password').value=btn.dataset.password;
             document.getElementById('role').value=btn.dataset.role;
             document.getElementById('status').value=btn.dataset.status;
@@ -290,25 +303,8 @@ document.addEventListener('DOMContentLoaded', function(){
             userModal.show();
         });
     });
-    // Delete User Modal
-    document.querySelectorAll('.deleteBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Example: hide user list and open modal
-        const usersContainer = document.getElementById('usersContainer');
-        if(usersContainer) usersContainer.style.display = 'none';
 
-        // Assuming you have a modal with id="userModal"
-        const userModalEl = document.getElementById('userModal');
-        if(userModalEl) {
-            const userModal = new bootstrap.Modal(userModalEl);
-            hideUsers();
-            userModal.show();
-
-        }
-    });
-});
-
-    // Reset Password Modal
+    // Reset Password
     document.querySelectorAll('.resetBtn').forEach(btn=>{
         btn.addEventListener('click',()=>{
             document.getElementById('reset_user_id').value=btn.dataset.id;
@@ -323,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('userModal').addEventListener('hidden.bs.modal', showUsers);
     document.getElementById('resetModal').addEventListener('hidden.bs.modal', showUsers);
 
-    // Toggle Password visibility
+    // Toggle Password
     document.querySelectorAll('.password-text .eye-icon').forEach(icon=>{
         icon.addEventListener('click',()=>{
             const td=icon.parentElement;

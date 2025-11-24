@@ -7,14 +7,12 @@ $success = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
-    $email_prefix = trim($_POST['email']);
-    $email = $email_prefix;
-    $phone = preg_replace('/\D/', '', trim($_POST['phone'])); // Remove non-digit characters
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
     $role = $_POST['role'] ?? 'user';
     $status = $_POST['status'] ?? 'active';
 
-    if ($username && $email_prefix && $password && $role && $phone) {
+    if ($username && $email && $password && $role) {
         // Check if username exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE username=?");
         $stmt->bind_param("s", $username);
@@ -25,12 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $message = "<div class='alert alert-danger'>Username already exists!</div>";
         } else {
             $hashed = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (username, email, phone, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssss", $username, $email, $phone, $hashed, $role, $status, $password);
+            $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $username, $email, $hashed, $role, $status, $password);
 
             if ($stmt->execute()) {
                 $success = true;
-                $message = "<div class='alert alert-success text-center fw-bold'>User registered successfully!</div>";
+                
             } else {
                 $message = "<div class='alert alert-danger'>Failed to register user.</div>";
             }
@@ -51,13 +49,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="style/register.css">
+
 </head>
 <body>
 
 <div id="successOverlay">
     <div class="box">
         <div class="spinner-border text-success mb-3" style="width:3rem;height:3rem;"></div>
-        <h5 class="text-success fw-bold">Registration Successful!</h5>
+        <h5 class="text-success fw-bold">Registering successfully...!</h5>
         <p class="text-secondary">Please wait...</p>
     </div>
 </div>
@@ -66,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2><i class="bi bi-person-plus-fill"></i> Create Account</h2>
     <?= $message ?>
 
-    <form method="POST">
+    <form method="POST" id="registerForm">
 
         <!-- Username -->
         <div class="mb-3 input-group">
@@ -76,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <!-- Password -->
         <div class="mb-3 input-group">
-            <span class="input-group-text input-icon-password"><i class="bi bi-lock-fill"></i></span>
+            <span class="input-group-text input-icon-password "><i class="bi bi-lock-fill input-icon-bi-eye"></i></span>
             <input type="password" name="password" class="form-control" placeholder="Password" required>
-            <span class="input-group-text" id="togglePassword"><i class="bi bi-eye-fill"></i></span>
+            <span class="input-group-text " id="togglePassword"><i class="bi bi-eye-fill"style="color:#6f42c1;"></i></span>
         </div>
 
         <!-- Email -->
@@ -87,15 +86,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="text" id="emailInput" name="email" class="form-control" placeholder="@cfe.shopping.com" required>
         </div>
 
-        <!-- Phone -->
-        <div class="mb-3 input-group">
-            <span class="input-group-text input-icon-phone"><i class="bi bi-telephone-fill"></i></span>
-            <input type="text" name="phone" id="phoneInput" class="form-control" placeholder="Phone" required>
-        </div>
-
         <!-- Role -->
         <div class="mb-3 input-group">
-            <span class="input-group-text input-icon-role"><i class="bi bi-person-badge-fill"></i></span>
+            <span class="input-group-text input-icon-role "><i class="bi bi-person-badge-fill "></i></span>
             <select name="role" class="form-select" required>
                 <option value="">Select Role</option>
                 <option value="user">User</option>
@@ -113,11 +106,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <!-- Buttons -->
-        <button class="btn btn-primary w-100 mb-3 btn-custom">
+        <button type="submit" class="btn btn-primary w-100 mb-3">
             <i class="bi bi-person-plus-fill me-2"></i> Register
         </button>
 
-        <a href="user_list.php" class="btn w-100 mb-3 btn-custom" style="background: linear-gradient(90deg,yellow,green); color:#fff;">
+        <a href="user_list.php" class="btn w-100 mb-3" style="background: linear-gradient(90deg,yellow,green); color:#fff;">
             <i class="bi bi-arrow-left-circle-fill me-2"></i> Back
         </a>
 
@@ -143,24 +136,19 @@ emailInput.addEventListener('input', () => {
     emailInput.setSelectionRange(value.length, value.length);
 });
 
-// Auto format phone input with spaces
-const phoneInput = document.getElementById('phoneInput');
-phoneInput.addEventListener('input', () => {
-    let digits = phoneInput.value.replace(/\D/g, '');
-    if(digits.length <= 3){
-        phoneInput.value = digits;
-    } else if(digits.length <= 6){
-        phoneInput.value = digits.slice(0,3) + ' ' + digits.slice(3);
-    } else {
-        phoneInput.value = digits.slice(0,3) + ' ' + digits.slice(3,6) + ' ' + digits.slice(6,10);
-    }
-});
+// Show loading overlay on form submit
+const form = document.getElementById('registerForm');
+const overlay = document.getElementById('successOverlay');
 
-// Show success overlay & redirect
+form.addEventListener('submit', function(e) {
+    overlay.style.display = "flex";
+});
 <?php if ($success): ?>
-document.getElementById('successOverlay').style.display = "flex";
-setTimeout(() => { window.location.href = "user_list.php"; }, 2000);
+overlay.style.display = "flex";
+setTimeout(() => { window.location.href = "user_list.php"; }, 1000);
 <?php endif; ?>
+
+
 </script>
 
 </body>
