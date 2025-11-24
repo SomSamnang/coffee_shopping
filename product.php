@@ -55,7 +55,7 @@ if (!$result) {
                     <i class="bi bi-person me-2" style="color:blue;"></i> Profile
                 </a>
             </li>
-             <!-- Category -->
+                    <!-- Category -->
             <li>
                 <a class="dropdown-item" href="category_list.php" style="color:blue; font-weight:500;">
                     <i class="bi bi-list-ul me-2" style="color:blue;"></i> Category
