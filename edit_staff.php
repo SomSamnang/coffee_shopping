@@ -71,10 +71,7 @@ body {
     padding: 15px;
 }
 
-.container {
-    max-width: 600px;
-    width: 100%;
-}
+.container { max-width: 600px; width: 100%; }
 
 .card {
     border-radius: 20px;
@@ -96,12 +93,7 @@ body {
     margin-bottom: 30px;
 }
 
-.form-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #555;
-}
-
+.form-label { font-size: 0.9rem; font-weight: 500; color: #555; }
 .form-uniform {
     height: 45px;
     padding: 6px 14px;
@@ -151,17 +143,43 @@ body {
     margin-top: 10px;
 }
 
-@media (max-width: 768px) {
-    .row-cols-responsive { flex-direction: column; }
+/* Loading Overlay */
+#loadingOverlay {
+    position: fixed;
+    top:0; left:0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    color: #c9cdf0ff;
+    font-size: 1.2rem;
 }
+#loadingOverlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 15px;
+    
+}
+
+@media (max-width: 768px) { .row-cols-responsive { flex-direction: column; } }
 </style>
 </head>
 <body>
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner-border text-light" role="status"></div>
+    <div>Please wait...!</div>
+</div>
+
 <div class="container">
     <div class="card">
         <div class="card-header">Edit Staff</div>
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" id="staffForm">
             <img id="preview" src="uploads/<?= htmlspecialchars($staff['photo'] ?: 'default.png') ?>" class="photo-preview">
 
             <div class="row g-3 row-cols-responsive">
@@ -196,7 +214,7 @@ body {
                     <input type="date" name="start_date" class="form-control form-uniform" value="<?= $staff['start_date'] ?? '' ?>">
 
                     <label class="form-label mt-2">Resign Date</label>
-                    <input type="date" name="resign_date" style="" class="form-control form-uniform" value="<?= $staff['resign_date'] ?? '' ?>">
+                    <input type="date" name="resign_date" class="form-control form-uniform" value="<?= $staff['resign_date'] ?? '' ?>">
 
                     <label class="form-label mt-2">Status</label>
                     <select name="status" id="status" class="form-select form-uniform">
@@ -218,7 +236,20 @@ body {
 function loadPreview(event) {
     document.getElementById('preview').src = URL.createObjectURL(event.target.files[0]);
 }
+
+// Show loading overlay on form submit with 1-second delay
+document.getElementById('staffForm').addEventListener('submit', function(e){
+    e.preventDefault(); // Prevent immediate form submission
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+
+    // Delay submission by 1 second (1000ms)
+    setTimeout(() => {
+        e.target.submit();
+    }, 1000);
+});
 </script>
+
 
 </body>
 </html>

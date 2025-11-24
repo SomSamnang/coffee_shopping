@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $stmt->close();
 
+    // Redirect after success
     header("Location: staff_profile.php");
     exit;
 }
@@ -75,7 +76,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Status Selector on Top */
+/* Status Selector */
 #status {
     border-radius: 12px;
     border: 1px solid #ddd;
@@ -147,13 +148,13 @@ body {
     font-size: 0.9rem;
     margin-top: 8px;
     border: 1px solid #6c63ff;
-    color: #ffffffff;
+    color: #fff;
     background: #5a5246ff;
     transition: all 0.3s;
 }
 .btn-secondary:hover {
     background: #6c63ff;
-    color: #0c2387ff;
+    color: #fff;
 }
 
 /* Flex columns */
@@ -170,14 +171,43 @@ body {
         flex-direction: column;
     }
 }
+
+/* Loading Overlay */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    color: #2b00d6ff;
+    font-size: 1.2rem;
+}
+#loadingOverlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 15px;
+}
 </style>
 </head>
 <body>
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner-border text-light" role="status"></div>
+    <div style="margin-top:10px; text-align:center;">
+        Add New Staff Successfully...!<br> Please wait...!
+    </div>
+</div>
+
+
 <div class="card">
     <div class="card-header">Add New Staff</div>
-
-  
 
     <form method="POST" enctype="multipart/form-data" id="staffForm">
         <img id="preview" src="uploads/default.png" alt="" class="photo-preview">
@@ -215,11 +245,12 @@ body {
 
                 <label class="form-label mt-2">Resign Date</label>
                 <input type="date" name="resign_date" class="form-control">
+
                 <label class="form-label mt-2">Status</label>
-    <select name="status" id="status" form="staffForm" onchange="togglePosition()">
-        <option value="active" selected>Active</option>
-        <option value="inactive">Inactive</option>
-    </select>
+                <select name="status" id="status" form="staffForm" onchange="togglePosition()">
+                    <option value="active" selected>Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
         </div>
 
@@ -249,7 +280,19 @@ togglePosition();
 function loadPreview(event) {
     document.getElementById('preview').src = URL.createObjectURL(event.target.files[0]);
 }
+
+// Show overlay for 1 second before submitting
+document.getElementById('staffForm').addEventListener('submit', function(e){
+    e.preventDefault(); // Stop immediate submission
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+    
+    setTimeout(() => {
+        e.target.submit(); // Submit form after 1 second
+    }, 1000); // 1000ms = 1 second
+});
 </script>
+
 
 </body>
 </html>
