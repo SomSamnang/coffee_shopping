@@ -6,6 +6,18 @@ $sql = "SELECT * FROM positions WHERE status = 1 ORDER BY position_name ASC";
 $positions = $conn->query($sql);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Auto-generate employee ID
+    $last_id_sql = "SELECT id FROM employee ORDER BY no DESC LIMIT 1";
+    $last_id_result = $conn->query($last_id_sql);
+    if ($last_id_result->num_rows > 0) {
+        $last_row = $last_id_result->fetch_assoc();
+        $last_num = (int)substr($last_row['id'], 3); // Remove 'ST-' prefix
+        $new_num = $last_num + 1;
+    } else {
+        $new_num = 1;
+    }
+    $employee_id = 'ST-' . str_pad($new_num, 3, '0', STR_PAD_LEFT);
+
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
@@ -20,14 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['photo']['tmp_name'], 'uploads/' . $photo);
     }
 
-    $stmt = $conn->prepare("INSERT INTO staff (name, email, phone, position, start_date, resign_date, status, photo)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssss", $name, $email, $phone, $position, $start_date, $resign_date, $status, $photo);
+    $stmt = $conn->prepare("INSERT INTO employee (id, name, email, phone, position, start_date, resign_date, status, photo) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssss", $employee_id, $name, $email, $phone, $position, $start_date, $resign_date, $status, $photo);
     $stmt->execute();
     $stmt->close();
 
     // Redirect after success
-    header("Location: staff_profile.php");
+    header("Location: employee_list.php");
     exit;
 }
 ?>
@@ -36,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Add New Staff</title>
+<title>Add New Employee</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -53,146 +65,40 @@ body {
 }
 
 /* Compact Card */
-.card {
-    border-radius: 20px;
-    padding: 30px;
-    background: #fff;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-}
+.card { border-radius: 20px; padding: 30px; background: #fff; width: 100%; max-width: 480px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
 
 /* Header */
-.card-header {
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: center;
-    color: #6c63ff;
-    margin-bottom: 20px;
-}
+.card-header { font-size: 1.5rem; font-weight: 700; text-align: center; color: #6c63ff; margin-bottom: 20px; }
 
 /* Status Selector */
-#status {
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-    width: 100%;
-}
-#status:focus {
-    border-color: #6c63ff;
-    box-shadow: 0 0 10px rgba(108,99,255,0.25);
-}
+#status { border-radius: 12px; border: 1px solid #ddd; padding: 10px; font-size: 0.95rem; margin-bottom: 20px; width: 100%; }
+#status:focus { border-color: #6c63ff; box-shadow: 0 0 10px rgba(108,99,255,0.25); }
 
 /* Inputs */
-.form-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 4px;
-    color: #555;
-}
-.form-control, .form-select {
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-}
-.form-control:focus, .form-select:focus {
-    border-color: #6c63ff;
-    box-shadow: 0 0 12px rgba(108,99,255,0.2);
-}
+.form-label { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; color: #555; }
+.form-control, .form-select { border-radius: 12px; border: 1px solid #ddd; padding: 10px 12px; font-size: 0.9rem; transition: all 0.3s; }
+.form-control:focus, .form-select:focus { border-color: #6c63ff; box-shadow: 0 0 12px rgba(108,99,255,0.2); }
 
 /* Photo Preview */
-.photo-preview {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto 15px auto;
-    border: 3px solid #ddd;
-    transition: 0.3s;
-}
-.photo-preview:hover {
-    transform: scale(1.05);
-    border-color: #6c63ff;
-}
+.photo-preview { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ddd; transition: 0.3s; }
+.photo-preview:hover { transform: scale(1.05); border-color: #6c63ff; }
 
 /* Buttons */
-.btn-primary {
-    background: linear-gradient(135deg, #6c63ff, #5047d6);
-    border: none;
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #fff;
-    transition: all 0.3s;
-}
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-.btn-secondary {
-    width: 100%;
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    margin-top: 8px;
-    border: 1px solid #6c63ff;
-    color: #fff;
-    background: #5a5246ff;
-    transition: all 0.3s;
-}
-.btn-secondary:hover {
-    background: #6c63ff;
-    color: #fff;
-}
+.btn-primary { background: linear-gradient(135deg, #6c63ff, #5047d6); border: none; width: 100%; padding: 12px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; color: #fff; transition: all 0.3s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+.btn-secondary { width: 100%; padding: 10px; border-radius: 12px; font-size: 0.9rem; margin-top: 8px; border: 1px solid #6c63ff; color: #fff; background: #5a5246ff; transition: all 0.3s; }
+.btn-secondary:hover { background: #6c63ff; color: #fff; }
 
 /* Flex columns */
-.row-cols-responsive {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-.row-cols-responsive .col-md-6 {
-    flex: 1;
-}
-@media (max-width: 480px) {
-    .row-cols-responsive {
-        flex-direction: column;
-    }
-}
+.row-cols-responsive { display: flex; gap: 15px; flex-wrap: wrap; }
+.row-cols-responsive .col-md-6 { flex: 1; }
+@media (max-width: 480px) { .row-cols-responsive { flex-direction: column; } }
 
 /* Loading Overlay */
-#loadingOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    flex-direction: column;
-    color: #2b00d6ff;
-    font-size: 1.2rem;
-}
-#loadingOverlay .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 15px;
-}
+#loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; color: #2b00d6ff; font-size: 1.2rem; }
+#loadingOverlay .spinner-border { width: 3rem; height: 3rem; margin-bottom: 15px; }
 </style>
 </head>
 <body>
@@ -201,15 +107,14 @@ body {
 <div id="loadingOverlay">
     <div class="spinner-border text-light" role="status"></div>
     <div style="margin-top:10px; text-align:center;">
-        Add New Staff Successfully...!<br> Please wait...!
+        Add New Employees Successfully...!<br> Please wait...!
     </div>
 </div>
 
-
 <div class="card">
-    <div class="card-header">Add New Staff</div>
+    <div class="card-header">Add New Employees</div>
 
-    <form method="POST" enctype="multipart/form-data" id="staffForm">
+    <form method="POST" enctype="multipart/form-data" id="employeeForm">
         <img id="preview" src="uploads/default.png" alt="" class="photo-preview">
 
         <div class="row g-3 row-cols-responsive">
@@ -247,7 +152,7 @@ body {
                 <input type="date" name="resign_date" class="form-control">
 
                 <label class="form-label mt-2">Status</label>
-                <select name="status" id="status" form="staffForm" onchange="togglePosition()">
+                <select name="status" id="status" form="employeeForm" onchange="togglePosition()">
                     <option value="active" selected>Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
@@ -255,8 +160,8 @@ body {
         </div>
 
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Add Staff</button>
-            <a href="staff_profile.php" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Add Employees</button>
+            <a href="employee_list.php" class="btn btn-secondary">Back</a>
         </div>
     </form>
 </div>
@@ -282,17 +187,13 @@ function loadPreview(event) {
 }
 
 // Show overlay for 1 second before submitting
-document.getElementById('staffForm').addEventListener('submit', function(e){
-    e.preventDefault(); // Stop immediate submission
+document.getElementById('employeeForm').addEventListener('submit', function(e){
+    e.preventDefault();
     var overlay = document.getElementById('loadingOverlay');
     overlay.style.display = 'flex';
-    
-    setTimeout(() => {
-        e.target.submit(); // Submit form after 1 second
-    }, 1000); // 1000ms = 1 second
+    setTimeout(() => { e.target.submit(); }, 1000);
 });
 </script>
-
 
 </body>
 </html>

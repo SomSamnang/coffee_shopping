@@ -11,7 +11,7 @@ $user_name = '';
 $user_photo = '';
 
 if ($user_id) {
-    $stmt = $conn->prepare("SELECT name, photo FROM staff WHERE id = ?");
+    $stmt = $conn->prepare("SELECT name, photo FROM employee WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->bind_result($user_name, $user_photo);
@@ -29,8 +29,8 @@ if ($search) {
                    OR position LIKE '%" . $conn->real_escape_string($search) . "%'";
 }
 
-// Fetch staff
-$sql = "SELECT * FROM staff $search_sql ORDER BY created_at DESC";
+// Fetch employee
+$sql = "SELECT * FROM employee $search_sql ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -38,7 +38,7 @@ $result = $conn->query($sql);
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Staff Profiles</title>
+<title>Employee Lists</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <style>
@@ -51,6 +51,10 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     padding: 0.5rem 1rem;
     border-radius: 0 0 20px 20px;
+      /* Sticky */
+    position: sticky;
+    top: 0;
+    z-index: 1020;
 }
 .navbar-custom .navbar-brand {
     font-weight: 700;
@@ -68,10 +72,6 @@ body {
     border-radius: 20px;
     transition: 0.3s;
 }
-.navbar-custom .btn-outline-light:hover {
-    background-color: rgba(255,255,255,0.15);
-    color: #fff;
-}
 .navbar-custom .dropdown-menu {
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -80,20 +80,25 @@ body {
 .staff-photo { width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid #dee2e6; }
 .card-staff { border-radius: 15px; transition: 0.3s; }
 .card-staff:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-.status-badge { font-size: 0.85rem; }
 .search-container { position: relative; }
 .search-container input { border-radius: 50px; padding-right: 40px; padding-left: 15px; height: 35px; }
-.search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: gray; }
-@media (max-width: 768px) { .table-responsive { display: none; } .staff-cards { display: block; } }
-@media (min-width: 769px) { .staff-cards { display: none; } }
+.search-container button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); border:none; background:none; color: gray; cursor: pointer; }
+
+@media (max-width: 768px) { 
+    .table-responsive { display: none; } 
+    .staff-cards { display: block; } 
+}
+@media (min-width: 769px) { 
+    .staff-cards { display: none; } 
+}
 </style>
 </head>
 <body>
 
-<!-- Cool Navbar -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom shadow-sm mb-4">
 <div class="container">
-    <a class="navbar-brand" href="index.php"><i class="bi bi-people-fill me-2"></i>Staff Management</a>
+    <a class="navbar-brand" href="index.php"><i class="bi bi-people-fill me-2"></i>Employee Management</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
     </button>
@@ -102,30 +107,28 @@ body {
         <!-- Search -->
         <form class="d-flex me-3" method="get" action="">
             <div class="search-container">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search staff..." value="<?= htmlspecialchars($search) ?>">
-                <i class="bi bi-search"></i>
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search Employee..." value="<?= htmlspecialchars($search) ?>">
+                <button type="submit"><i class="bi bi-search"></i></button>
             </div>
         </form>
 
-        <!-- User Dropdown / Login -->
+        <!-- User Dropdown -->
         <ul class="navbar-nav">
         <?php if($currentUser): ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle me-1"></i>
-                    <?= htmlspecialchars($currentUser) ?>
+                    <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($currentUser) ?>
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item d-flex align-items-center" href="profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li>
-                    <li><a class="dropdown-item d-flex align-items-center" href="category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
-                    <li><a class="dropdown-item d-flex align-items-center" href="position_list.php"><i class="bi bi-briefcase me-2 text-warning"></i>Positions</a></li>
+                    <li><a class="dropdown-item" href="my_profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
+                    <li><a class="dropdown-item" href="position_list.php"><i class="bi bi-briefcase me-2 text-warning"></i>Positions</a></li>
                     <?php if($role==='admin'): ?>
-                        <li><a class="dropdown-item d-flex align-items-center" href="user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
-                        <li><a class="dropdown-item d-flex align-items-center" href="index.php"><i class="bi bi-house-door me-2 text-info"></i>Home</a></li>
+                        <li><a class="dropdown-item" href="user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
+                        <li><a class="dropdown-item" href="index.php"><i class="bi bi-house-door me-2 text-info"></i>Home</a></li>
                     <?php endif; ?>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item d-flex align-items-center text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                 </ul>
             </li>
         <?php else: ?>
@@ -139,18 +142,19 @@ body {
 </nav>
 
 <div class="container my-5">
- <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary d-flex align-items-center"><i class="bi bi-people-fill me-2 text-warning"></i> Staff Profiles</h2>
-    <a href="add_staff.php" class="btn btn-success d-flex align-items-center"><i class="bi bi-plus-lg me-1 text-white"></i> Add Staff</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="bi bi-people-fill me-2 text-warning"></i> Employee Lists</h2>
+    <a href="add_employee.php" class="btn btn-success"><i class="bi bi-plus-lg me-1 text-white"></i> Add Employees</a>
 </div>
 
-<!-- Table View -->
+<!-- TABLE VIEW -->
 <div class="table-responsive shadow-sm rounded">
     <table class="table table-bordered table-hover align-middle bg-white text-center">
         <thead class="table-primary">
             <tr>
-                <th>ID</th>
+                <th>No</th>
                 <th>Photo</th>
+                <th>Employee ID</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -162,10 +166,13 @@ body {
             </tr>
         </thead>
         <tbody>
-        <?php while($row = $result->fetch_assoc()): ?>
+        <?php 
+        $row_number = 1; 
+        while($row = $result->fetch_assoc()): ?>
             <tr>
-                <td><?= $row['id'] ?></td>
+                <td><?= $row_number ?></td>
                 <td><img src="<?= $row['photo'] ? 'uploads/'.$row['photo'] : 'https://via.placeholder.com/60' ?>" class="staff-photo"></td>
+                <td><?= '' . str_pad($row['id'], 3, '0', STR_PAD_LEFT) ?></td>
                 <td><?= htmlspecialchars($row['name']) ?></td>
                 <td><?= htmlspecialchars($row['email']) ?></td>
                 <td><?= htmlspecialchars($row['phone']) ?></td>
@@ -176,27 +183,31 @@ body {
                 </td>
                 <td>
                     <?php if($row['status']=='active'): ?>
-                        <span class="badge bg-success status-badge">Active</span>
+                        <span class="badge bg-success">Active</span>
                     <?php else: ?>
-                        <span class="badge bg-secondary status-badge">Inactive</span>
+                        <span class="badge bg-secondary">Inactive</span>
                     <?php endif; ?>
                 </td>
                 <td>
-                    <a href="edit_staff.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm"> <i class="bi bi-pencil-square"></i></a>
-                    <a href="delete_staff.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+                    <a href="edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
+                    <a href="delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>
-        <?php endwhile; ?>
+        <?php 
+        $row_number++; 
+        endwhile; ?>
         <?php if($result->num_rows == 0): ?>
-            <tr><td colspan="10" class="text-center text-muted">No staff found.</td></tr>
+            <tr><td colspan="11" class="text-center text-muted">No staff found.</td></tr>
         <?php endif; ?>
         </tbody>
     </table>
 </div>
 
-<!-- Mobile Card View -->
+<!-- MOBILE CARD VIEW -->
 <div class="staff-cards row g-3 mt-3">
-    <?php $result->data_seek(0); while($row = $result->fetch_assoc()): ?>
+    <?php 
+    $result->data_seek(0);
+    while($row = $result->fetch_assoc()): ?>
     <div class="col-12 col-md-6 col-lg-4">
         <div class="card card-staff shadow-sm p-3">
             <div class="d-flex align-items-center">
@@ -207,19 +218,21 @@ body {
                     <p class="mb-0"><i class="bi bi-telephone"></i> <?= htmlspecialchars($row['phone']) ?></p>
                     <p class="mb-0"><strong>Position:</strong> <?= htmlspecialchars($row['position']) ?></p>
                     <p class="mb-0"><strong>Start:</strong> <?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></p>
-                    <p class="mb-0"><strong>Resign:</strong> <span style="color: <?= $row['resign_date'] ? '#dc3545' : '#000' ?>; font-weight: <?= $row['resign_date'] ? '600' : '400' ?>;">
-                        <?= $row['resign_date'] ? date('d-M-Y', strtotime($row['resign_date'])) : '-' ?>
-                    </span></p>
+                    <p class="mb-0"><strong>Resign:</strong> 
+                        <span style="color: <?= $row['resign_date'] ? '#dc3545' : '#000' ?>; font-weight: <?= $row['resign_date'] ? '600' : '400' ?>;">
+                            <?= $row['resign_date'] ? date('d-M-Y', strtotime($row['resign_date'])) : '-' ?>
+                        </span>
+                    </p>
                     <p class="mt-1">
-                    <?php if($row['status']=='active'): ?>
-                        <span class="badge bg-success status-badge">Active</span>
-                    <?php else: ?>
-                        <span class="badge bg-secondary status-badge">Inactive</span>
-                    <?php endif; ?>
+                        <?php if($row['status']=='active'): ?>
+                            <span class="badge bg-success">Active</span>
+                        <?php else: ?>
+                            <span class="badge bg-secondary">Inactive</span>
+                        <?php endif; ?>
                     </p>
                     <div class="mt-2">
-                        <a href="edit_staff.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Edit</a>
-                        <a href="delete_staff.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</a>
+                        <a href="edit_employee.php" class="btn btn-warning btn-sm me-1"><i class="bi bi-pencil"></i> Edit</a>
+                        <a href="delete_employee.php" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</a>
                     </div>
                 </div>
             </div>

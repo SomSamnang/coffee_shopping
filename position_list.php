@@ -24,35 +24,24 @@ $role = $_SESSION['role'] ?? null;
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-/* Navbar */
-.navbar-custom { background: linear-gradient(90deg, #00ffe1ff, #0800ffff); color: #fff; }
+body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.navbar-custom { background: linear-gradient(90deg, #00ffe1ff, #0800ffff); color: #fff; position: sticky; top: 0; z-index: 1020; }
 .navbar-custom .nav-link, .navbar-custom .navbar-brand { color: #fff; font-weight: 500; }
 .navbar-custom .nav-link:hover { color: #ffd700; }
-
-/* Search */
 .search-container { position: relative; }
-.search-container i { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: #6c757d; }
+.search-container input { border-radius: 50px; padding-right: 40px; padding-left: 15px; height: 35px; }
+.search-container button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); border:none; background:none; color: gray; cursor: pointer; }
 
-/* Card */
 .card { box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; }
-
-/* Table */
 .table thead { background: #343a40; color: #fff; text-align: center; }
 .table tbody td { text-align: center; vertical-align: middle; }
 .table-hover tbody tr:hover { background-color: #f1f1f1; transition: 0.3s; }
-
 .badge-active { background-color: #28a745; }
 .badge-inactive { background-color: #df2e2eff; }
-
-/* Buttons */
 .btn-add { background: linear-gradient(45deg,#ff7e5f,#feb47b); color: #fff; font-weight: 600; border-radius: 50px; }
 .btn-add:hover { transform: scale(1.05); transition: 0.3s; }
-
-/* Action buttons */
 .btn-action { margin: 0 2px; transition: 0.3s; }
 .btn-action:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-
-/* Center heading */
 h2 { text-align: left; font-weight: 600; color: #1100ffff; }
 </style>
 </head>
@@ -67,13 +56,15 @@ h2 { text-align: left; font-weight: 600; color: #1100ffff; }
     </button>
 
     <div class="collapse navbar-collapse justify-content-end align-items-center" id="navbarNav">
+       <!-- Search -->
         <form class="d-flex me-3" method="get" action="">
             <div class="search-container">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search positions..." value="<?= htmlspecialchars($search) ?>">
-                <i class="bi bi-search"></i>
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search Position..." value="<?= htmlspecialchars($search) ?>">
+                <button type="submit"><i class="bi bi-search"></i></button>
             </div>
         </form>
 
+        <!-- User Dropdown -->
         <ul class="navbar-nav">
         <?php if($currentUser): ?>
             <li class="nav-item dropdown">
@@ -83,13 +74,7 @@ h2 { text-align: left; font-weight: 600; color: #1100ffff; }
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li>
                     <li><a class="dropdown-item" href="category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
-               
-                    <li>
-                        <a class="dropdown-item" href="staff_profile.php"><i class="bi bi-people me-2 text-warning"></i>Staff List</a>
-                    </li>
-
-                    
-                    
+                    <li><a class="dropdown-item" href="employee_list.php"><i class="bi bi-people me-2 text-warning"></i>Employee List</a></li>
                     <?php if($role === 'admin'): ?>
                         <li><a class="dropdown-item" href="user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
                         <li><a class="dropdown-item" href="index.php"><i class="bi bi-house-door me-2 text-info"></i>Home</a></li>
@@ -109,7 +94,7 @@ h2 { text-align: left; font-weight: 600; color: #1100ffff; }
 <div class="container">
     <div class="card p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0 text-left  flex-grow-1"><i class="bi bi-list-task me-2"></i>Position List</h2>
+            <h2 class="mb-0 text-left flex-grow-1"><i class="bi bi-list-task me-2"></i>Position List</h2>
             <a href="add_position.php" class="btn btn-add btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Position</a>
         </div>
         <div class="table-responsive">
