@@ -56,7 +56,7 @@ $categoryColors = [
       <ul class="navbar-nav gap-2">
         <li class="nav-item"><a class="nav-link active" href="index.php"><i class="bi bi-house"></i> Home</a></li>
         <li>
-          <a class="nav-link" href="staff_profile.php"><i class="bi bi-people"></i> Staff List</a>
+          <a class="nav-link" href="employee_list.php"><i class="bi bi-people"></i> Employee List</a>
         </li>
      
         <li class="nav-item"><a class="nav-link" href="product.php"><i class="bi bi-plus-circle"></i> Products</a></li>
