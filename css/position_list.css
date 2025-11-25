@@ -1,0 +1,101 @@
+body {
+  background: #f8f9fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.navbar-custom {
+  background: linear-gradient(90deg, #00ffe1ff, #0800ffff);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+  color: #fff;
+  font-weight: 500;
+}
+.navbar-custom .nav-link:hover {
+  color: #ffd700;
+}
+
+.search-container {
+  position: relative;
+}
+.search-container input {
+  border-radius: 50px;
+  padding-right: 40px;
+  padding-left: 15px;
+  height: 35px;
+}
+.search-container button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  color: gray;
+  cursor: pointer;
+}
+
+.card {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+.table thead {
+  background: #343a40;
+  color: #fff;
+  text-align: center;
+}
+.table tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+  transition: 0.3s;
+}
+
+.badge-active {
+  background-color: #28a745;
+}
+.badge-inactive {
+  background-color: #df2e2eff;
+}
+
+.btn-add {
+  background: linear-gradient(45deg, #ff7e5f, #feb47b);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 50px;
+}
+.btn-add:hover {
+  transform: scale(1.05);
+  transition: 0.3s;
+}
+
+.btn-action {
+  margin: 0 2px;
+  transition: 0.3s;
+}
+.btn-action:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  text-align: left;
+  font-weight: 600;
+  color: #1100ffff;
+}
+/* Remove scrollbars (disable scrolling) */
+body {
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  overflow-y: auto; /* Allow vertical scroll but hide bar */
+}
+
+/* For WebKit browsers (Chrome, Edge, Safari) */
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
