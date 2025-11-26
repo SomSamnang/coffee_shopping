@@ -1,160 +1,87 @@
 <?php
-require_once '../connection/db_connect.php';
+session_start();
 
+require_once '../connection/db_connect.php'; 
+
+// Get employee ID from URL
 $emp_id = $_GET['id'] ?? null;
+
+// Validate if an ID was provided
 if (!$emp_id) {
-    header("Location: add_employee.php");
+    // Redirect to the employee list page if no ID is provided
+    header("Location: employee_list.php");
     exit;
 }
 
-$stmt = $conn->prepare("SELECT id,name,position,email,photo FROM employee WHERE id=?");
-$stmt->bind_param("i",$emp_id);
+// 1. Prepare SQL statement
+// Using COALESCE to ensure a non-null value is always returned for photo
+$stmt = $conn->prepare("SELECT id, name, position, email, COALESCE(photo, '') as photo FROM employee WHERE id = ?");
+
+// 2. Bind the ID parameter as a STRING ('s') 
+if ($stmt === false) {
+    die('Prepare failed: ' . htmlspecialchars($conn->error));
+}
+
+$stmt->bind_param("s", $emp_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $employee = $result->fetch_assoc();
 $stmt->close();
 
+// 3. Check if the employee was found
 if (!$employee) {
-    echo "Employee not found.";
+    // Optionally log this attempt
+    header("HTTP/1.0 404 Not Found");
+    echo "Employee with ID: " . htmlspecialchars($emp_id) . " not found.";
     exit;
 }
+
+// Set a placeholder image if the photo field is empty
+$photo_source = !empty($employee['photo']) ? '../uploads/' . htmlspecialchars($employee['photo']) : 'https://via.placeholder.com/120/1a73e8/ffffff?text=PHOTO';
 ?>
-
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Employee ID Card</title>
+<title>Employee ID Card (ID: <?= htmlspecialchars($employee['id']) ?>)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-body {
-font-family: 'Inter', sans-serif;
-background: linear-gradient(120deg, #74ebd5, #ACB6E5);
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-margin: 0;
-}
-
-.id-card {
-width: 280px;
-height: 430px;
-border-radius: 20px;
-background: linear-gradient(180deg, #baff60ff 0%, #ffa1a1ff 100%);
-padding: 20px;
-box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-display: flex;
-flex-direction: column;
-align-items: center;
-position: relative;
-overflow: hidden;
-transition: transform 0.3s;
-}
-
-.id-card:hover {
-transform: scale(1.05);
-}
-
-.id-card-header {
-width: 100%;
-height: 50px;
-background: linear-gradient(90deg, #4b7bec, #34c3eb);
-border-radius: 15px 15px 0 0;
-display: flex;
-align-items: center;
-justify-content: center;
-color: #fff;
-font-weight: 700;
-font-size: 16px;
-margin-bottom: 15px;
-box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-}
-
-.id-card .photo {
-width: 120px;
-height: 120px;
-border-radius: 50%;
-object-fit: cover;
-border: 3px solid #4b7bec;
-margin-bottom: 15px;
-box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.id-card h2 {
-font-size: 20px;
-font-weight: 700;
-margin-bottom: 5px;
-text-align: center;
-color: #2100c7ff;
-}
-
-.id-card .position {
-font-size: 14px;
-font-weight: 600;
-color: #00af20ff;
-margin-bottom: 10px;
-text-align: center;
-}
-
-.id-card .info1 {
-font-size: 13px;
-color: #000000ff;
-margin-bottom: 4px;
-text-align: center;
-}
-.id-card .info {
-font-size: 13px;
-color: #1100ffff;
-margin-bottom: 4px;
-text-align: center;
-}
-
-.id-card .address {
-font-size: 9px;
-color: #000000ff;
-margin-top: 5px;
-text-align: center;
-}
-
-.id-card-footer {
-font-size: 10px;
-text-align: center;
-position: absolute;
-bottom: 0px;
-width: 100%;
-color: #0800ffff;
-border-radius: 0 0 15px 15px ;
-background-color: #4bec53ff;
-}
-
-@media print {
-body { background: #fff; display: block; }
-.id-card { box-shadow:none; margin:auto; page-break-after:always; }
-} </style>
-
+<link rel="stylesheet" href="../css/employee_card.css">
 </head>
 <body>
 
-<div class="id-card">
-    <div class="id-card-header">Relax Coffee Card</div>
-    <img src="../uploads/<?= htmlspecialchars($employee['photo'] ?: 'default.png') ?>" class="photo" alt="Employee Photo">
-    <h2><?= htmlspecialchars($employee['name']) ?></h2>
-    <p class="position"><?= htmlspecialchars($employee['position']) ?></p>
-    <p class="info">ID: <?= $employee['id'] ?></p>
-    <p class="info1">Email: <?= htmlspecialchars($employee['email']) ?></p>
-    <p class="address">#123B,Tuol Svay Prey,Beoung kengkong,Phnom Penh</p>
-    <div class="id-card-footer">2025-2026</div>
-</div>
 
+<div class="id-card">
+    <div class="id-card-header">
+        <span>RELAX COFFEE CARD</span>
+    </div>
+    
+    <div class="content-area">
+        <img src="<?= $photo_source ?>" class="photo" alt="<?= htmlspecialchars($employee['name']) ?> Photo">
+        
+        <h2><?= htmlspecialchars($employee['name']) ?></h2>
+        
+        <p class="position"><?= htmlspecialchars($employee['position']) ?></p>
+        
+        <div class="info-grid">
+            <p>ID: <strong class="bg-red"><?= htmlspecialchars($employee['id']) ?></strong></p>
+            <p>Email: <strong class="bg-red"><?= htmlspecialchars($employee['email']) ?></strong></p>
+            <p>Validity: <strong class="bg-red">2025-2026</strong></p>
+
+        </div>
+        
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=<?= urlencode('EMP-ID:' . $employee['id']) ?>" class="qr-code" alt="QR Code">
+
+    </div>
+    
+    <div class="id-card-footer">
+        #123B, Tuol Svay Prey, Beoung Kengkong, Phnom Penh
+    </div>
+</div>
 <script>
 window.onload = function() {
     window.print();
 };
 </script>
-
 </body>
 </html>

@@ -1,0 +1,149 @@
+:root {
+  --primary-color: #1a73e8; /* Deep Blue */
+  --accent-color: #21a1f1; /* Bright Cyan */
+  --text-dark: #3c4043;
+  --text-light: #ffffff;
+  --card-bg: #ffffff;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background: #f0f2f5;
+}
+.id-card {
+  width: 300px;
+  height: 470px; /* Slightly taller for better spacing */
+  border-radius: 15px;
+  background-color: #f6ff00ff;
+  padding: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden; /* For the gradient header */
+}
+.id-card-header {
+  width: calc(100% + 40px); /* 100% + 2*padding */
+  height: 60px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--accent-color) 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-light);
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-align: center;
+  position: absolute;
+  border-bottom: 1px solid #eee;
+  top: 0;
+  margin-top: -1px; /* Correct a tiny edge case */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.id-card-header span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+}
+.content-area {
+  margin-top: 70px; /* Space for the header */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.id-card .photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent-color);
+  box-shadow: 0 0 0 4px var(--card-bg), 0 0 0 6px rgba(0, 0, 0, 0.1); /* Layered border effect */
+  margin-bottom: 20px;
+}
+.id-card h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: blue;
+  margin-bottom: 3px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.id-card .position {
+  font-size: 12px;
+  font-weight: 700;
+  color: red;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+.id-card .info-grid {
+  width: 90%;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+.id-card .info-grid p {
+  font-size: 13px;
+  color: var(--text-dark);
+  margin: 0;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-weight: 800;
+}
+.id-card .info-grid strong {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+.id-card .info-grid strong.bg-red {
+  color: rgb(75, 14, 14);
+
+  border-radius: 4px;
+  font-weight: 800; /* Make it extra bold */
+}
+.id-card .qr-code {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 25px;
+}
+.id-card-footer {
+  font-size: 11px;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: var(--text-light);
+  background: var(--primary-color);
+  padding: 4px 0;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: none;
+    display: block;
+    height: auto;
+    /* Force A7 size for ID card if possible, adjust margins */
+    /* @page { size: A7 portrait; margin: 0.5cm; } */
+  }
+  .print-area {
+    display: none;
+  }
+  .id-card {
+    box-shadow: none;
+    margin: 0 auto;
+  }
+}
