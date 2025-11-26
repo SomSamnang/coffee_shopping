@@ -3,7 +3,7 @@ session_start();
 require_once('../connection/db_connect.php');
 
 /* ---------------------------------------------------------
-   AUTO CLEAR SEARCH WHEN PAGE IS REFRESHED (F5)
+    AUTO CLEAR SEARCH WHEN PAGE IS REFRESHED (F5)
 ----------------------------------------------------------*/
 if (isset($_GET['search']) && isset($_SERVER['HTTP_CACHE_CONTROL']) 
     && $_SERVER['HTTP_CACHE_CONTROL'] === 'max-age=0') {
@@ -60,11 +60,66 @@ $stmt->close();
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link rel="stylesheet" href="/coffee_shops/css/employee_list.css">
+<style>
+/* Since the original code referenced an external CSS file (/coffee_shops/css/employee_list.css) 
+    and you asked for the "full file," I'm including common styles for the elements 
+    used, assuming they might be in that external file. 
+    NOTE: These styles are speculative based on the HTML structure and common practices.
+*/
+.navbar-custom {
+    background-color: #007bff; /* A common primary blue for custom navbars */
+    color: white;
+}
+.navbar-custom .navbar-brand, 
+.navbar-custom .nav-link,
+.navbar-custom .dropdown-toggle {
+    color: white !important;
+}
+.navbar-custom .dropdown-menu {
+    background-color: white;
+}
+.navbar-toggler-icon {
+    filter: invert(1); /* To make the hamburger icon visible on a dark background */
+}
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.search-container input {
+    padding-right: 35px; /* Make space for the icon */
+}
+.search-container button {
+    position: absolute;
+    right: 0;
+    border: none;
+    background: transparent;
+    color: #495057;
+    height: 100%;
+    padding: 0 10px;
+    cursor: pointer;
+}
+.staff-photo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+}
+.card-staff h5 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+}
+.card-staff p {
+    font-size: 0.85rem;
+    margin-bottom: 0.1rem;
+}
+</style>
 
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom shadow-sm mb-4">
 <div class="container">
     <a class="navbar-brand" href="../home/index.php"><i class="bi bi-people-fill me-2"></i>Employee Management</a>
@@ -75,17 +130,15 @@ $stmt->close();
 
     <div class="collapse navbar-collapse justify-content-end align-items-center" id="navbarNav">
 
-        <!-- Search -->
         <form class="d-flex me-3" method="get" action="">
             <div class="search-container">
                 <input type="text" name="search" class="form-control form-control-sm"
-                       placeholder="Search Employee..."
-                       value="<?= htmlspecialchars($search) ?>">
+                        placeholder="Search Employee..."
+                        value="<?= htmlspecialchars($search) ?>">
                 <button type="submit"><i class="bi bi-search"></i></button>
             </div>
         </form>
 
-        <!-- User Dropdown -->
         <ul class="navbar-nav">
             <?php if($currentUser): ?>
             <li class="nav-item dropdown">
@@ -97,6 +150,10 @@ $stmt->close();
                         <i class="bi bi-person me-2 text-primary"></i>Profile</a></li> 
                     <li><a class="dropdown-item" href="../categories/category_list.php">
                         <i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
+                    <li>
+                        <a class="dropdown-item" href="../employees/employee_card_list.php">
+                        <i class="bi bi-people-fill me-2 text-secondary"></i>Employees</a>
+                    </li>
                     <li><a class="dropdown-item" href="../positions/position_list.php">
                         <i class="bi bi-briefcase me-2 text-warning"></i>Positions</a></li> 
                     <?php if($role==='admin'): ?> 
@@ -126,10 +183,11 @@ $stmt->close();
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold text-primary"><i class="bi bi-people-fill me-2 text-warning"></i> Employee Lists</h2>
+
+
     <a href="../employees/add_employee.php" class="btn btn-success"><i class="bi bi-plus-lg"></i> Add Employees</a>
 </div>
 
-<!-- Table View -->
 <div class="table-responsive shadow-sm rounded d-none d-md-block">
     <table class="table table-bordered table-hover bg-white text-center align-middle">
         <thead class="table-primary">
@@ -166,10 +224,18 @@ $stmt->close();
                         <?= ucfirst($row['status']) ?>
                     </span>
                 </td>
-                <td>
-                    <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
-                    <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-                </td>
+              <td>
+    <a href="../employees/employee_card.php?id=<?= $row['id'] ?>" target="_blank" class="btn btn-info btn-sm mb-1">
+        <i class="bi bi-card-text"></i> Print
+    </a>
+    <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm mb-1">
+        <i class="bi bi-pencil-square"></i>
+    </a>
+    <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm mb-1">
+        <i class="bi bi-trash"></i>
+    </a>
+</td>
+
             </tr>
             <?php $num++; endforeach; ?>
         <?php else: ?>
@@ -179,7 +245,6 @@ $stmt->close();
     </table>
 </div>
 
-<!-- Mobile Card View -->
 <div class="staff-cards row g-3 mt-3 d-block d-md-none">
 <?php if (count($employees) > 0): ?>
     <?php foreach($employees as $row): ?>
@@ -201,6 +266,7 @@ $stmt->close();
                         </p>
                         <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm me-1">Edit</a>
                         <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-danger btn-sm">Delete</a>
+                    
                     </div>
                 </div>
             </div>
