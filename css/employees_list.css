@@ -75,6 +75,8 @@ body {
   gap: 6px;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
+  
 }
 
 .btn-action {
@@ -147,6 +149,7 @@ body {
 .btn-action {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 1px;
   padding: 6px 12px;
   font-size: 14px;
@@ -163,7 +166,7 @@ body {
 }
 
 .btn-edit {
-  background: #ffc107;
+  background: #1cff07;
   color: #000;
 }
 
@@ -196,6 +199,12 @@ body::-webkit-scrollbar {
   max-width: 100%;
   overflow-x: auto;
 }
+.text-red span {
+  color: #ff0000 !important;
+  font-weight: bold;
+}
+
+
 
 /* RESPONSIVE */
 @media (max-width: 768px) {

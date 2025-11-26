@@ -162,8 +162,18 @@ $stmt->close();
                     <td><?= htmlspecialchars($row['email']) ?></td>
                     <td><?= htmlspecialchars($row['phone']) ?></td>
                     <td><?= htmlspecialchars($row['position']) ?></td>
-                    <td><?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></td>
-                    <td><?= $row['resign_date'] ? date('d-M-Y', strtotime($row['resign_date'])) : '-' ?></td>
+                    <td style="color:blue;" ><?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></td>
+                                     <td>
+                    <?php if ($row['resign_date']): ?>
+                        <span style="color:red;">
+                            <?= date('d-M-Y', strtotime($row['resign_date'])) ?>
+                        </span>
+                    <?php else: ?>
+                        -
+                    <?php endif; ?>
+                    </td>
+
+
                     <td>
                         <span class="badge <?= $row['status']=='active' ? 'bg-success' : 'bg-secondary' ?>">
                             <?= ucfirst($row['status']) ?>
