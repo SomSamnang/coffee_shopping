@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div id="loadingOverlay">
     <div class="spinner-border text-light" role="status"></div>
-    <div style="margin-top:10px; text-align:center;">
-        Adding Employee... Please wait!
+    <div style="margin-top:10px; color:blue; text-align:center;">
+         Please wait...!
     </div>
 </div>
 
@@ -141,6 +141,7 @@ function togglePosition() {
     const status = document.getElementById("status").value;
     const wrapper = document.getElementById("position-wrapper");
     const position = document.getElementById("position");
+
     if (status === "inactive") {
         wrapper.style.display = "none";
         position.required = false;
@@ -156,10 +157,14 @@ function loadPreview(event) {
     document.getElementById('preview').src = URL.createObjectURL(event.target.files[0]);
 }
 
-// Show overlay on submit
+// ⭐ SHOW LOADING + 1 SECOND DELAY BEFORE SUBMIT
 document.getElementById('employeeForm').addEventListener('submit', function(e){
+    e.preventDefault(); // stop immediate submit
+
     const overlay = document.getElementById('loadingOverlay');
     overlay.style.display = 'flex';
+    setTimeout(() => { e.target.submit(); }, 1000);
+
 });
 </script>
 

@@ -116,7 +116,10 @@ $result = $stmt->get_result();
                         <tr>
                             <td><?= $row['id'] ?></td>
                             <td><?= htmlspecialchars($row['position_name']) ?></td>
-                            <td><?= $row['created_at'] ?></td>
+                            <td>
+                                <?= $row['created_at'] ? date('d-M-Y H:i A', strtotime($row['created_at'])) : '-' ?>
+                            </td>
+
 
                             <td>
                                 <?php if ($row['status'] == 1): ?>

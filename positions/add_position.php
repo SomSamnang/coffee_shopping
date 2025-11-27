@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($position_name) {
         $stmt = $conn->prepare("INSERT INTO positions (position_name, status) VALUES (?, ?)");
         $stmt->bind_param("si", $position_name, $status);
+
         if ($stmt->execute()) {
             header("Location: ../positions/position_list.php");
             exit;
@@ -31,9 +32,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Add Position</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="..css/add_position.css">
+<link rel="stylesheet" href="../css/add_position.css">
+
+<style>
+/* LOADING OVERLAY */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+}
+</style>
+
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner-border text-light" role="status"></div>
+    <div style="margin-top:10px; text-align:center; color:blue;">
+        Please wait...!
+    </div>
+</div>
 
 <div class="card">
     <h2><i class="bi bi-briefcase me-2"></i>Add New Position</h2>
@@ -42,7 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-danger"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <form method="post">
+    <!-- FIXED: added id="positionForm" -->
+    <form method="post" id="positionForm">
         <div class="mb-3">
             <label for="position_name" class="form-label">Position Name</label>
             <div class="input-group">
@@ -65,6 +93,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 </div>
+
+<script>
+document.getElementById('positionForm').addEventListener('submit', function(e){
+    // Show loading overlay immediately
+    document.getElementById('loadingOverlay').style.display = 'flex';
+
+    // Delay submit for 4 seconds (4000ms)
+    setTimeout(() => {
+        e.target.submit();
+    }, 10000);  // 4000ms = 4 seconds
+});
+
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

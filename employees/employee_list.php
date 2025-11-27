@@ -95,7 +95,7 @@ $stmt->close();
                 <ul class="dropdown-menu dropdown-menu-end"> 
                     <li><a class="dropdown-item" href="my_profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li> 
                     <li><a class="dropdown-item" href="../categories/category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
-                    <li><a class="dropdown-item" href="../employees/employee_card_list.php"><i class="bi bi-people-fill me-2 text-secondary"></i>Employees</a></li>
+                    
                     <li><a class="dropdown-item" href="../positions/position_list.php"><i class="bi bi-briefcase me-2 text-warning"></i>Positions</a></li> 
                     <?php if($role==='admin'): ?> 
                     <li><a class="dropdown-item" href="../users/user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
@@ -160,10 +160,25 @@ $stmt->close();
                     <td><?= str_pad($row['id'], 3, '0', STR_PAD_LEFT) ?></td>
                     <td><?= htmlspecialchars($row['name']) ?></td>
                     <td><?= htmlspecialchars($row['email']) ?></td>
-                    <td><?= htmlspecialchars($row['phone']) ?></td>
-                    <td><?= htmlspecialchars($row['position']) ?></td>
-                    <td style="color:blue;" ><?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></td>
-                                     <td>
+                    <td>
+                        <?php
+                        $phone = preg_replace('/\D/', '', $row['phone']); // remove any non-digit characters
+                        if (strlen($phone) === 9) {
+                            // Format as 3-2-2-2 pattern
+                            echo substr($phone, 0, 3) . ' ' . substr($phone, 3, 2) . ' ' . substr($phone, 5, 2) . ' ' . substr($phone, 7, 2);
+                        } else {
+                            // fallback: show as-is
+                            echo htmlspecialchars($row['phone']);
+                        }
+                        ?>
+                        </td>
+
+                         <td><?= htmlspecialchars($row['position']) ?></td>
+                        <td style="color:blue;">
+                            <?= $row['start_date'] ? date('d-M-Y ', strtotime($row['start_date'])) : '-' ?>
+                        </td>
+
+                    <td>
                     <?php if ($row['resign_date']): ?>
                         <span style="color:red;">
                             <?= date('d-M-Y', strtotime($row['resign_date'])) ?>

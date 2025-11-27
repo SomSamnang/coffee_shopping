@@ -46,8 +46,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/edit_position.css">
+
+<style>
+/* Loading Overlay */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none; /* hidden by default */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+}
+</style>
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner-border text-light" role="status"></div>
+    <div style="margin-top:10px; text-align:center; color:blue;">
+       Please wait...!
+    </div>
+</div>
 
 <div class="card">
     <h2><i class="bi bi-pencil-square me-2"></i>Edit Position</h2>
@@ -56,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-danger"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <form method="post">
+    <form method="post" id="editPositionForm">
         <div class="mb-3">
             <label for="position_name" class="form-label">Position Name</label>
             <div class="input-group">
@@ -81,5 +106,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Show loading overlay and delay submission (4 seconds)
+document.getElementById('editPositionForm').addEventListener('submit', function(e){
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+
+    // Delay form submission for 4 seconds
+    setTimeout(() => {
+        e.target.submit();
+    }, 4000); // 4000ms = 4 seconds
+});
+</script>
+
 </body>
 </html>

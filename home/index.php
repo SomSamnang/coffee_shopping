@@ -86,7 +86,7 @@ $categoryColors = [
 
 <!-- Sticky filter -->
 <div class="container mt-3">
-<div class="sticky-filter shadow-sm p-3 rounded">
+<div class="sticky-filter  shadow-sm p-3 rounded">
     <h3 class="text-center fw-bold text-secondary">☕ Coffee Menu</h3>
     <div id="clock" class="text-center mb-2"></div>
 
