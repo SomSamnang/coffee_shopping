@@ -93,10 +93,14 @@ $stmt->close();
                     <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($currentUser) ?> 
                 </a> 
                 <ul class="dropdown-menu dropdown-menu-end"> 
-                    <li><a class="dropdown-item" href="my_profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li> 
+                    <li><a class="dropdown-item" href="my_profile.php"><i class="bi bi-person me-2 text-primary"></i>My Account</a></li> 
                     <li><a class="dropdown-item" href="../categories/category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
                     
                     <li><a class="dropdown-item" href="../positions/position_list.php"><i class="bi bi-briefcase me-2 text-warning"></i>Positions</a></li> 
+                    <!-- profie list -->
+                     <li>
+                        <a class="dropdown-item" href="../my_profile/my_profile_list.php"><i class="bi bi-card-list me-2 text-info"></i>Profile List</a>
+                     </li>
                     <?php if($role==='admin'): ?> 
                     <li><a class="dropdown-item" href="../users/user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
                     <?php endif; ?>

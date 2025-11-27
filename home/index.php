@@ -68,7 +68,7 @@ $categoryColors = [
                 <?= htmlspecialchars($currentUser) ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="my_profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="../my_profile/my_profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
                 <?php if($role === 'admin'): ?>
                 <li><a class="dropdown-item" href="../users/user_list.php"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li>
                 <?php endif; ?>

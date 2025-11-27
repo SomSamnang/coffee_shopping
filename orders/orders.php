@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
 
     <!-- Profile -->
     <li>
-        <a class="dropdown-item" href="profile.php">
+        <a class="dropdown-item" href="../my_profile/my_profile.php">
             <i class="bi bi-person me-2 text-primary"></i> Profile
         </a>
     </li>
