@@ -10,6 +10,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $msg_type = 'info';
+    $msg_text = '';
+
     // Add/Edit User
     if (isset($_POST['user_modal'])) {
         $id = intval($_POST['id'] ?? 0);
@@ -32,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $stmt->execute();
                 $stmt->close();
-                $_SESSION['success_msg'] = "User updated successfully.";
+                $msg_type = 'success';
+                $msg_text = "User updated successfully.";
             } else {
                 // Add new user
                 $check = $conn->prepare("SELECT id FROM users WHERE username=?");
@@ -40,20 +44,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $check->execute();
                 $check->store_result();
                 if ($check->num_rows > 0) {
-                    $_SESSION['success_msg'] = "Username already exists.";
+                    $msg_type = 'warning';
+                    $msg_text = "Username already exists.";
                 } else {
                     $hashed = password_hash($password, PASSWORD_DEFAULT);
                     $stmt = $conn->prepare("INSERT INTO users (username, email, password, role, status, display_password) VALUES (?, ?, ?, ?, ?, ?)");
                     $stmt->bind_param("ssssss", $username, $email, $hashed, $role, $status, $password);
                     $stmt->execute();
                     $stmt->close();
-                    $_SESSION['success_msg'] = "User added successfully.";
+                    $msg_type = 'success';
+                    $msg_text = "User added successfully.";
                 }
                 $check->close();
             }
         } else {
-            $_SESSION['success_msg'] = "Please fill all required fields.";
+            $msg_type = 'warning';
+            $msg_text = "Please fill all required fields.";
         }
+        $_SESSION['msg_type'] = $msg_type;
+        $_SESSION['msg_text'] = $msg_text;
         header("Location: ../users/user_list.php");
         exit;
     }
@@ -70,10 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("ssi", $hashed, $new_pass, $user_id);
             $stmt->execute();
             $stmt->close();
-            $_SESSION['success_msg'] = "Password reset successfully.";
+            $msg_type = 'success';
+            $msg_text = "Password reset successfully.";
         } else {
-            $_SESSION['success_msg'] = "Passwords do not match or empty.";
+            $msg_type = 'warning';
+            $msg_text = "Passwords do not match or empty.";
         }
+        $_SESSION['msg_type'] = $msg_type;
+        $_SESSION['msg_text'] = $msg_text;
         header("Location: ../users/user_list.php");
         exit;
     }
@@ -85,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("i", $del_id);
         $stmt->execute();
         $stmt->close();
-        $_SESSION['success_msg'] = "User deleted successfully.";
+        $_SESSION['msg_type'] = 'success';
+        $_SESSION['msg_text'] = "User deleted successfully.";
         header("Location: ../users/user_list.php");
         exit;
     }
@@ -93,22 +107,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch all users
 $userResult = $conn->query("SELECT id, username, email, role, status, created_at, display_password FROM users ORDER BY id DESC");
-$success_msg = $_SESSION['success_msg'] ?? '';
-unset($_SESSION['success_msg']);
+$msg_type = $_SESSION['msg_type'] ?? '';
+$msg_text = $_SESSION['msg_text'] ?? '';
+unset($_SESSION['msg_type'], $_SESSION['msg_text']);
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>User Management</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="../css/user_list.css">
+<style>
+body { background: #f4f6f9; }
+.badge-admin { background-color: #dc3545; color: #fff; }
+.badge-user { background-color: #0d6efd; color: #fff; }
+.badge-active { background-color: #198754; color: #fff; }
+.badge-inactive { background-color: #6c757d; color: #fff; }
+.password-dots { cursor: pointer; }
+.alert-floating { position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px; }
+</style>
 </head>
 <body>
 
-<!-- Navbar -->
+<?php if($msg_text): ?>
+
+<div class="alert alert-<?= $msg_type ?> alert-floating alert-dismissible fade show" role="alert">
+<?= htmlspecialchars($msg_text) ?>
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif; ?>
+
 <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background: linear-gradient(90deg, #4bcffa, #0d6efd);">
 <div class="container">
 <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#"><i class="bi bi-person-gear me-2"></i> User Management</a>
@@ -130,7 +161,7 @@ unset($_SESSION['success_msg']);
 <?= htmlspecialchars($_SESSION['username']) ?>
 </a>
 <ul class="dropdown-menu dropdown-menu-end">
-<li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
+<li><a class="dropdown-item" href="../my_profile/my_profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
 <li><a class="dropdown-item" href="../home/index.php"><i class="bi bi-house-door me-2" style="color:pink;"></i> Home</a></li>
 <li><hr class="dropdown-divider"></li>
 <li><a class="dropdown-item text-danger" href="../users/logout.php"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
@@ -215,6 +246,7 @@ unset($_SESSION['success_msg']);
 </div>
 
 <!-- User Modal -->
+
 <div class="modal fade" id="userModal" tabindex="-1">
 <div class="modal-dialog">
 <form method="POST" class="modal-content p-4" id="userForm">
@@ -246,6 +278,7 @@ unset($_SESSION['success_msg']);
 </div>
 
 <!-- Reset Password Modal -->
+
 <div class="modal fade" id="resetModal" tabindex="-1">
 <div class="modal-dialog">
 <form method="POST" class="modal-content p-4" id="resetForm">
@@ -264,9 +297,9 @@ unset($_SESSION['success_msg']);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    const success_msg = '<?= $success_msg ?>';
     const usersContainer = document.getElementById('usersContainer');
 
     const userModal = new bootstrap.Modal(document.getElementById('userModal'));

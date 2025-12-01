@@ -14,6 +14,7 @@ if (!$user) { die("Profile not found"); }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    $username = $_POST['username'];
     $name_en = $_POST['name_en'];
     $name_kh = $_POST['name_kh'];
     $position = $_POST['position'];
@@ -38,15 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $conn->prepare("
         UPDATE profile SET 
-        name_en=?, name_kh=?, position=?, position_kh=?, birth_date=?, gender=?,
+        username=?, name_en=?, name_kh=?, position=?, position_kh=?, birth_date=?, gender=?,
         employee_id_no=?, extension=?, phone=?, email=?,
         start_date=?, resign_date=?, marital_status=?, place_of_birth=?, current_address=?, photo=?
         WHERE id=?
     ");
 
     $stmt->bind_param(
-        "ssssssssssssssssi",
-        $name_en, $name_kh, $position, $position_kh, $birth_date, $gender,
+        "sssssssssssssssssi",
+        $username, $name_en, $name_kh, $position, $position_kh, $birth_date, $gender,
         $employee_id_no, $extension, $phone, $email,
         $start_date, $resign_date, $marital_status, $place_of_birth, $current_address, $photo, $id
     );
@@ -61,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>Edit Profile</title>
@@ -94,75 +96,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="file" name="photo" accept="image/*" class="form-control mt-2" onchange="previewImage(event)">
         </center>
 
-        <div class="row mt-3">
-            <div class="col-md-6 mb-2">
-                <label>Name EN</label>
-                <input type="text" name="name_en" class="form-control" value="<?= htmlspecialchars($user['name_en']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Name KH</label>
-                <input type="text" name="name_kh" class="form-control" value="<?= htmlspecialchars($user['name_kh']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Position</label>
-                <input type="text" name="position" class="form-control" value="<?= htmlspecialchars($user['position']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Position KH</label>
-                <input type="text" name="position_kh" class="form-control" value="<?= htmlspecialchars($user['position_kh']) ?>">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Birth Date</label>
-                <input type="date" name="birth_date" class="form-control" value="<?= $user['birth_date'] ?>">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Gender</label>
-                <select name="gender" class="form-control" required>
-                    <option value="">Select</option>
-                    <option <?= $user['gender']=="Male"?"selected":"" ?>>Male</option>
-                    <option <?= $user['gender']=="Female"?"selected":"" ?>>Female</option>
-                </select>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Employee ID No</label>
-                <input type="text" name="employee_id_no" class="form-control" value="<?= htmlspecialchars($user['employee_id_no']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Extension</label>
-                <input type="text" name="extension" class="form-control" value="<?= htmlspecialchars($user['extension']) ?>">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Phone</label>
-                <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($user['phone']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Email</label>
-                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Start Date</label>
-                <input type="date" name="start_date" class="form-control" value="<?= $user['start_date'] ?>" required>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Resign Date</label>
-                <input type="date" name="resign_date" class="form-control" value="<?= $user['resign_date'] ?>">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Marital Status</label>
-                <input type="text" name="marital_status" class="form-control" value="<?= htmlspecialchars($user['marital_status']) ?>">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label>Place of Birth</label>
-                <input type="text" name="place_of_birth" class="form-control" value="<?= htmlspecialchars($user['place_of_birth']) ?>">
-            </div>
-            <div class="col-12 mb-2">
-                <label>Current Address</label>
-                <textarea name="current_address" class="form-control"><?= htmlspecialchars($user['current_address']) ?></textarea>
-            </div>
+    <div class="row mt-3">
+      <div class="col-md-6 mb-2">
+            <label>Name EN</label>
+            <input type="text" name="name_en" class="form-control" value="<?= htmlspecialchars($user['name_en']) ?>" required>
         </div>
+                <div class="col-md-6 mb-2">
 
-        <button type="submit" class="btn btn-primary w-100 mt-2">Update Profile</button>
-    </form>
+            <label>Name KH</label>
+            <input type="text" name="name_kh" class="form-control" value="<?= htmlspecialchars($user['name_kh']) ?>" required>
+        </div>
+   
+       <div class="col-md-6 mb-2">
+            <label>Username</label>
+            <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Position</label>
+            <input type="text" name="position" class="form-control" value="<?= htmlspecialchars($user['position']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Position KH</label>
+            <input type="text" name="position_kh" class="form-control" value="<?= htmlspecialchars($user['position_kh']) ?>">
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Birth Date</label>
+            <input type="date" name="birth_date" class="form-control" value="<?= $user['birth_date'] ?>">
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Gender</label>
+            <select name="gender" class="form-control" required>
+                <option value="">Select</option>
+                <option <?= $user['gender']=="Male"?"selected":"" ?>>Male</option>
+                <option <?= $user['gender']=="Female"?"selected":"" ?>>Female</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Employee ID No</label>
+            <input type="text" name="employee_id_no" class="form-control" value="<?= htmlspecialchars($user['employee_id_no']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Extension</label>
+            <input type="text" name="extension" class="form-control" value="<?= htmlspecialchars($user['extension']) ?>">
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Phone</label>
+            <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($user['phone']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Start Date</label>
+            <input type="date" name="start_date" class="form-control" value="<?= $user['start_date'] ?>" required>
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Resign Date</label>
+            <input type="date" name="resign_date" class="form-control" value="<?= $user['resign_date'] ?>">
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Marital Status</label>
+            <input type="text" name="marital_status" class="form-control" value="<?= htmlspecialchars($user['marital_status']) ?>">
+        </div>
+        <div class="col-md-6 mb-2">
+            <label>Place of Birth</label>
+            <input type="text" name="place_of_birth" class="form-control" value="<?= htmlspecialchars($user['place_of_birth']) ?>">
+        </div>
+        <div class="col-12 mb-2">
+            <label>Current Address</label>
+            <textarea name="current_address" class="form-control"><?= htmlspecialchars($user['current_address']) ?></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mt-2">Update Profile</button>
+</form>
+
+
 </div>
 
 <script>
