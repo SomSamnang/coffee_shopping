@@ -154,81 +154,63 @@ $stmt->close();
 
             <tbody>
             <?php if (count($employees) > 0): ?>
-                <?php $num = 1; foreach($employees as $row): ?>
+                <?php $num = count($employees); foreach($employees as $row): ?>
                 <tr>
-                    <td><?= $num ?></td>
-                    <td>
-                        <img src="<?= $row['photo'] ? '../uploads/'.$row['photo'] : 'https://via.placeholder.com/60' ?>" 
-                             class="staff-photo">
-                    </td>
+                    <td><?= $num-- ?></td>
+                    <td><img src="<?= $row['photo'] ? '../uploads/'.$row['photo'] : 'https://via.placeholder.com/60' ?>" class="staff-photo"></td>
                     <td><?= str_pad($row['id'], 3, '0', STR_PAD_LEFT) ?></td>
                     <td><?= htmlspecialchars($row['name']) ?></td>
                     <td><?= htmlspecialchars($row['email']) ?></td>
+                    <td><?= htmlspecialchars($row['phone']) ?></td>
+                    <td><?= htmlspecialchars($row['position']) ?></td>
+                    <td><?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></td>
+                    <td><?= $row['resign_date'] ? date('d-M-Y', strtotime($row['resign_date'])) : '-' ?></td>
+                    <td><span class="badge <?= $row['status']=='active' ? 'bg-success' : 'bg-secondary' ?>"><?= ucfirst($row['status']) ?></span></td>
                     <td>
-                        <?php
-                        $phone = preg_replace('/\D/', '', $row['phone']); // remove any non-digit characters
-                        if (strlen($phone) === 9) {
-                            // Format as 3-2-2-2 pattern
-                            echo substr($phone, 0, 3) . ' ' . substr($phone, 3, 2) . ' ' . substr($phone, 5, 2) . ' ' . substr($phone, 7, 2);
-                        } else {
-                            // fallback: show as-is
-                            echo htmlspecialchars($row['phone']);
-                        }
-                        ?>
-                        </td>
-
-                         <td><?= htmlspecialchars($row['position']) ?></td>
-                        <td style="color:blue;">
-                            <?= $row['start_date'] ? date('d-M-Y ', strtotime($row['start_date'])) : '-' ?>
-                        </td>
-
-                    <td>
-                    <?php if ($row['resign_date']): ?>
-                        <span style="color:red;">
-                            <?= date('d-M-Y', strtotime($row['resign_date'])) ?>
-                        </span>
-                    <?php else: ?>
-                        -
-                    <?php endif; ?>
+                        <a href="../employees/employee_card.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary" target="_blank"><i class="bi bi-printer"></i></a>
+                        <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                        <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                     </td>
-
-
-                    <td>
-                        <span class="badge <?= $row['status']=='active' ? 'bg-success' : 'bg-secondary' ?>">
-                            <?= ucfirst($row['status']) ?>
-                        </span>
-                    </td>
-
-                    <!-- ACTION BUTTONS -->
-                    <td class="action-buttons">
-                        <a href="../employees/employee_card.php?id=<?= $row['id'] ?>" 
-                           target="_blank" 
-                           class="btn-action btn-print">
-                            <i class="bi bi-printer"></i>
-                        </a>
-
-                        <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" 
-                           class="btn-action btn-edit">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-
-                        <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" 
-                           onclick="return confirm('Are you sure?')" 
-                           class="btn-action btn-delete">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
-
                 </tr>
-                <?php $num++; endforeach; ?>
+                <?php endforeach; ?>
             <?php else: ?>
-                <tr>
-                    <td colspan="11">No employees found.</td>
-                </tr>
+                <tr><td colspan="11">No employees found.</td></tr>
             <?php endif; ?>
             </tbody>
         </table>
     </div>
+</div>
+
+<!-- MOBILE CARDS -->
+<div class="d-block d-md-none">
+    <?php if(count($employees) > 0): ?>
+        <?php $num = count($employees); foreach($employees as $row): ?>
+        <div class="card mb-3 shadow-sm">
+            <div class="row g-0 align-items-center">
+                <div class="col-4 text-center p-2">
+                    <img src="<?= $row['photo'] ? '../uploads/'.$row['photo'] : 'https://via.placeholder.com/80' ?>" class="img-fluid rounded-circle">
+                </div>
+                <div class="col-8">
+                    <div class="card-body p-2">
+                        <h5 class="card-title mb-1"><?= $num-- ?>. <?= htmlspecialchars($row['name']) ?></h5>
+                        <p class="mb-1"><strong>ID:</strong> <?= str_pad($row['id'], 3, '0', STR_PAD_LEFT) ?></p>
+                        <p class="mb-1"><strong>Position:</strong> <?= htmlspecialchars($row['position']) ?></p>
+                        <p class="mb-1"><strong>Status:</strong> <span class="badge <?= $row['status']=='active' ? 'bg-success' : 'bg-secondary' ?>"><?= ucfirst($row['status']) ?></span></p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <a href="../employees/employee_card.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary" target="_blank"><i class="bi bi-printer"></i></a>
+                            <a href="../employees/edit_employee.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                            <a href="../employees/delete_employee.php?id=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-center">No employees found.</p>
+    <?php endif; ?>
+</div>
+
 </div>
 
 

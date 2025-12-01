@@ -67,7 +67,7 @@ $top_qty  = $top_product ? $top_product['sold_today'] : 0;
 
             <!-- Profile -->
             <li>
-                <a class="dropdown-item" href="profile.php">
+                <a class="dropdown-item" href="../my_profile/my_profile.php">
                     <i class="bi bi-person me-2 text-primary"></i> Profile
                 </a>
             </li>

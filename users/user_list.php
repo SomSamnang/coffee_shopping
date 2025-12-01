@@ -177,9 +177,10 @@ body { background: #f4f6f9; }
 <div class="card p-4 shadow-sm mb-3">
 <div class="d-flex justify-content-between align-items-center mb-3">
 <h4 class="text-primary"><i class="bi bi-people"></i> Users List</h4>
-<button id="addUserBtn" class="btn btn-primary shadow-sm px-3">
+<button id="addUserBtn" class="btn btn-primary shadow-sm px-3" onclick="location.href='../users/register.php'">
   <i class="bi bi-person-plus-fill me-1"></i> Create User
 </button>
+
 </div>
 
 <div class="table-responsive rounded">

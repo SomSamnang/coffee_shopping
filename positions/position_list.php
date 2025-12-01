@@ -65,7 +65,7 @@ $result = $stmt->get_result();
                     <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($currentUser) ?>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="../my_profile/my_profile.php"><i class="bi bi-person me-2 text-primary"></i>Profile</a></li>
                     <li><a class="dropdown-item" href="../categories/category_list.php"><i class="bi bi-list-ul me-2 text-success"></i>Category</a></li>
                     <li><a class="dropdown-item" href="../employees/employee_list.php"><i class="bi bi-people me-2 text-warning"></i>Employee List</a></li>
 

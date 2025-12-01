@@ -123,6 +123,36 @@ body {
     font-size: 0.85rem;
     padding: 0.35em 0.6em;
 }
+.navbar-custom {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    padding: 8px 20px;
+    transition: background 0.3s;
+}
+.navbar-custom .nav-link {
+    color: #fff !important;
+    font-weight: 500;
+    transition: color 0.3s, background 0.3s;
+}
+.navbar-custom .nav-link:hover {
+    color: #ffd700 !important;
+}
+.navbar-custom .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    padding: 5px 0;
+}
+.navbar-custom .dropdown-item {
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+.navbar-custom .dropdown-item:hover {
+    background: rgba(76, 0, 255, 0.1);
+    color: #fff;
+}
+.navbar-brand i {
+    color: #fff;
+}
+
 /* Colored Icons */
 .icon-id { color: #ff4500; }
 .icon-position { color: #1e90ff; }
@@ -151,8 +181,8 @@ body {
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="../home/index.php">
-      <i class="fa fa-user-circle"></i> Profile System
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="../home/index.php">
+      <i class="fa fa-user-circle me-2" style="font-size:1.3rem;"></i> Profile System
     </a>
     <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -163,21 +193,41 @@ body {
         <!-- User Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-            <img src="../uploads/<?= $user['photo'] ?: 'default.png' ?>" class="rounded-circle me-2" style="width:35px; height:35px; object-fit:cover; border:2px solid #fff;">
-            <?= htmlspecialchars($current_user) ?>
+            <img src="../uploads/<?= $user['photo'] ?: 'default.png' ?>" class="rounded-circle me-2" style="width:38px; height:38px; object-fit:cover; border:2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+            <span style="color:#fff; font-weight:500;"><?= htmlspecialchars($current_user) ?></span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end shadow rounded-3">
-            <li><a class="dropdown-item d-flex align-items-center" href="../my_profile/my_profile.php"><i class="fa fa-id-card text-primary me-2"></i> My Profile</a></li>
-            <li><a class="dropdown-item d-flex align-items-center" href="../users/change_password.php"><i class="fa fa-key text-warning me-2"></i> Change Password</a></li>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg rounded-3" style="min-width:200px;">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="../my_profile/my_profile.php">
+                <i class="fa fa-id-card text-primary me-2"></i> My Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="../orders/orders.php">
+                <i class="fa fa-basket-shopping text-success me-2"></i> Orders
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="../users/change_password.php">
+                <i class="fa fa-key text-warning me-2"></i> Change Password
+              </a>
+            </li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item d-flex align-items-center text-danger" href="../users/logout.php"><i class="fa fa-power-off me-2"></i> Logout</a></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center text-danger" href="../users/logout.php">
+                <i class="fa fa-power-off me-2"></i> Logout
+              </a>
+            </li>
           </ul>
         </li>
       </ul>
     </div>
   </div>
 </nav>
+
+
+
 
 <!-- Profile Card -->
 <div class="container my-4">

@@ -44,7 +44,7 @@ $result = $conn->query("SELECT * FROM categories ORDER BY id DESC");
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-center">
                     <!-- Profile -->
                     <li>
-                        <a class="dropdown-item" href="profile.php" style="color:blue; font-weight:500;">
+                        <a class="dropdown-item" href="../my_profile/my_profile.php" style="color:blue; font-weight:500;">
                             <i class="bi bi-person me-2" style="color:blue;"></i> Profile
                         </a>
                     </li>

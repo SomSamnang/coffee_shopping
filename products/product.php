@@ -51,7 +51,7 @@ if (!$result) {
         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
 
             <li>
-                <a class="dropdown-item" href="profile.php">
+                <a class="dropdown-item" href="../my_profile/my_profile.php">
                     <i class="bi bi-person me-2 text-primary"></i>
                     <span class="text-dark">Profile</span>
                 </a>
