@@ -120,7 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="date" name="start_date" class="form-control form-uniform" value="<?= $employee['start_date'] ?? '' ?>">
 
                     <label class="form-label mt-2">Resign Date</label>
-                    <input type="date" name="resign_date" class="form-control form-uniform" value="<?= $employee['resign_date'] ?? '' ?>">
+                    <input type="date" 
+       name="resign_date" 
+       class="form-control form-uniform" 
+       value="<?= isset($employee['resign_date']) && $employee['resign_date'] != '0000-00-00' ? $employee['resign_date'] : 'Wor' ?>">
+
 
                     <label class="form-label mt-2">Status</label>
                     <select name="status" id="status" class="form-select form-uniform">

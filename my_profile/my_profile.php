@@ -250,12 +250,17 @@ body {
         <p class="mb-1"><i class="fa fa-briefcase icon-position me-2"></i><strong>Position:</strong><?= htmlspecialchars($user['position']) ?></span></p>
         <p class="mb-1"><i class="fa fa-venus-mars icon-gender me-2"></i><strong>Gender:</strong> <?= htmlspecialchars($user['gender']) ?></span></p>
         <p class="mb-1"><i class="fa fa-cake-candles icon-birth me-2"></i><strong>Birth Date:</strong><?= $user['birth_date'] ? date('d-M-Y', strtotime($user['birth_date'])) : '-' ?></span></p>
+         <p class="mb-1"><i class="fa-solid fa-calendar-check text-success me-2"></i><strong>Start Date:</strong> <?= $user['start_date'] ? date('d-M-Y', strtotime($user['start_date'])) : '-' ?></p>
       </div>
       <div class="col-6">
         <p class="mb-1"><i class="fa fa-phone icon-phone me-2"></i><strong>Phone:</strong><?= htmlspecialchars($user['phone']) ?></span></p>
         <p class="mb-1"><i class="fa fa-envelope icon-email me-2"></i><strong>Email:</strong><?= htmlspecialchars($user['email']) ?></span></p>
         <p class="mb-1"><i class="fa fa-ring icon-marital me-2"></i><strong>Marital:</strong><?= htmlspecialchars($user['marital_status']) ?></span></p>
-        <p class="mb-1"><i class="fa fa-location-dot icon-birthplace me-2"></i><strong>Birthplace:</strong> <?= htmlspecialchars($user['place_of_birth']) ?></span></p>
+        <p class="mb-1"><i class="fa fa-location-dot icon-birthplace me-2"></i><strong>Place Of Birth:</strong> <?= htmlspecialchars($user['place_of_birth']) ?></span></p>
+        <p class="mb-1">
+        <p class="mb-1"><i class="fa-solid fa-calendar-xmark text-danger me-2"></i><strong>Resign Date:</strong> <?= $user['resign_date'] ? date('d-M-Y', strtotime($user['resign_date'])) : 'Working' ?></p>
+        
+
       </div>
     </div>
 
