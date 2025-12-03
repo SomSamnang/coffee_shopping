@@ -59,6 +59,7 @@ $stmt->close();
 <title>Employee Lists</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="../css/employees_list.css">
 </head>
 <body>
@@ -105,7 +106,7 @@ $stmt->close();
                     <li><a class="dropdown-item" href="../users/user_list.php"><i class="bi bi-people-fill me-2 text-danger"></i>Users</a></li>
                     <?php endif; ?>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="../users/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li> 
+                    <li><a class="dropdown-item text-danger" href="../users/logout.php"><i class="fa fa-power-off me-2"style="color:red;"></i>Logout</a></li> 
                 </ul> 
             </li>
             <?php else: ?>

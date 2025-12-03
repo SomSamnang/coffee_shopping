@@ -17,6 +17,7 @@ $result = $conn->query("SELECT * FROM categories ORDER BY id DESC");
 <title>Category Management</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="../css/category_list.css">
 </head>
 <body>
@@ -73,7 +74,7 @@ $result = $conn->query("SELECT * FROM categories ORDER BY id DESC");
                     <!-- Logout -->
                     <li>
                         <a class="dropdown-item text-danger" href="../users/logout.php" style="color:blue;font-weight:500;">
-                            <i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout
+                           <i class="fa fa-power-off me-2"style="color:red;"></i> Logout
                         </a>
                     </li>
                 </ul>

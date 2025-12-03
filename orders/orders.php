@@ -67,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
 <title>Coffee Shop POS</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="../css/orders.css">
 </head>
 <body>
@@ -116,10 +117,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
 
     <li><hr class="dropdown-divider"></li>
 
+
     <!-- Logout -->
     <li>
         <a class="dropdown-item text-danger" href="../users/logout.php">
-            <i class="bi bi-box-arrow-right me-2"></i> Logout
+            <i class="fa fa-power-off me-2"></i> Logout
         </a>
     </li>
 

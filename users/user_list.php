@@ -120,6 +120,7 @@ unset($_SESSION['msg_type'], $_SESSION['msg_text']);
 <title>User Management</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 body { background: #f4f6f9; }
 .badge-admin { background-color: #dc3545; color: #fff; }
@@ -164,7 +165,8 @@ body { background: #f4f6f9; }
 <li><a class="dropdown-item" href="../my_profile/my_profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
 <li><a class="dropdown-item" href="../home/index.php"><i class="bi bi-house-door me-2" style="color:pink;"></i> Home</a></li>
 <li><hr class="dropdown-divider"></li>
-<li><a class="dropdown-item text-danger" href="../users/logout.php"><i class="bi bi-box-arrow-right me-2" style="color:red;"></i> Logout</a></li>
+<li><a class="dropdown-item text-danger" href="../users/logout.php"> 
+    <i class="fa fa-power-off me-2"style="color:red;"></i>Logout</a></li>
 </ul>
 </li>
 <?php endif; ?>

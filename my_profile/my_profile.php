@@ -216,7 +216,7 @@ body {
             <li><hr class="dropdown-divider"></li>
             <li>
               <a class="dropdown-item d-flex align-items-center text-danger" href="../users/logout.php">
-                <i class="fa fa-power-off me-2"></i> Logout
+                <i class="fa fa-power-off me-2"style="color:red;"></i> Logout
               </a>
             </li>
           </ul>

@@ -24,6 +24,7 @@ if (!$result) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="../css/product.css">
 
 </head>
@@ -84,7 +85,7 @@ if (!$result) {
 
             <li>
                 <a class="dropdown-item text-danger" href="../users/logout.php">
-                    <i class="bi bi-box-arrow-right me-2 text-danger"></i>
+                    <i i class="fa fa-power-off me-2"style="color:red;"></i>
                     <span class="fw-semibold">Logout</span>
                 </a>
             </li>
