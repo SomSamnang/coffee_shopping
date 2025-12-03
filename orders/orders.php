@@ -99,8 +99,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         </a>
     </li>
 
-    <!-- Order History -->
-    <li>
         <a class="dropdown-item" href="../orders/orders_history.php">
             <i class="bi bi-clock-history me-2 text-warning"></i> History Orders
         </a>

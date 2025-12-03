@@ -86,6 +86,17 @@ $top_qty  = $top_product ? $top_product['sold_today'] : 0;
 
             </li>
    
+            <li>
+                <a class="dropdown-item" href="../delivery/delivery.php">
+                    <i class="bi bi-truck me-2 text-secondary"></i> Delivery
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="../orders/export_orders_csv.php">
+                    <i class="bi bi-file-earmark-arrow-down me-2 text-success"></i> Export Orders CSV
+                </a>
+            </li>
+       
         
             <li><hr class="dropdown-divider"></li>
 

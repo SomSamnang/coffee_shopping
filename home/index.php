@@ -60,26 +60,49 @@ $categoryColors = [
         <li class="nav-item"><a class="nav-link" href="../categories/category_list.php"><i class="bi bi-list-ul"></i> Categories</a></li>
         <li class="nav-item"><a class="nav-link" href="../orders/orders.php"><i class="bi bi-basket"></i> Orders</a></li>
         <li class="nav-item"><a class="nav-link" href="../orders/orders_history.php"><i class="bi bi-clock-history"></i> Orders History</a></li>
+        
 
-        <!-- User Dropdown / Login -->
-        <?php if($currentUser): ?>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color:white;">
-                <i class="bi bi-person-circle me-1" style="color:yellow;"></i>
-                <?= htmlspecialchars($currentUser) ?>
+<!-- User Dropdown / Login -->
+<?php if($currentUser): ?>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color:white;">
+        <i class="bi bi-person-circle me-1" style="color:yellow;"></i>
+        <?= htmlspecialchars($currentUser) ?>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+            <a class="dropdown-item" href="../my_profile/my_profile.php">
+                <i class="bi bi-person me-2" style="color:blue;"></i> Profile
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="../my_profile/my_profile.php"><i class="bi bi-person me-2" style="color:blue;"></i> Profile</a></li>
-                <?php if($role === 'admin'): ?>
-                <li><a class="dropdown-item" href="../users/user_list.php"><i class="bi bi-people-fill me-2" style="color:green;"></i> Users</a></li>
-                <?php endif; ?>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="../users/logout.php"><i class="fa fa-power-off me-2"style="color:red;"></i></i> Logout</a></li>
-            </ul>
         </li>
-        <?php else: ?>
-        <li class="nav-item"><a class="nav-link btn btn-outline-light btn-sm" href="../users/login.php"><i class="bi bi-box-arrow-in-right me-2"></i> Login</a></li>
+        <?php if($role === 'admin'): ?>
+        <li>
+            <a class="dropdown-item" href="../users/user_list.php">
+                <i class="bi bi-people-fill me-2" style="color:green;"></i> Users
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item d-flex align-items-center" href="../delivery_staff/delivery_sft.php">
+                <i class="bi bi-people me-2 text-danger" style="font-size: 1.2rem;"></i> Delivery Staff
+            </a>
+        </li>
         <?php endif; ?>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-danger" href="../users/logout.php">
+                <i class="fa fa-power-off me-2" style="color:red;"></i> Logout
+            </a>
+        </li>
+    </ul>
+</li>
+<?php else: ?>
+<li class="nav-item">
+    <a class="nav-link btn btn-outline-light btn-sm" href="../users/login.php">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Login
+    </a>
+</li>
+<?php endif; ?>
+
       </ul>
     </div>
   </div>
