@@ -291,10 +291,9 @@ table tbody tr:hover {
                     <td><?= htmlspecialchars($row['phone']) ?></td>
                     <td><?= htmlspecialchars($row['email']) ?></td>
                     <td><?= $row['start_date'] ? date('d-M-Y', strtotime($row['start_date'])) : '-' ?></td>
-                    <td style="color: <?= $row['resign_date'] ? 'red' : 'blue' ?>;">
+                                        <td style="color: <?= $row['resign_date'] ? 'red' : 'blue' ?>;">
     <?= $row['resign_date'] ? date('d-M-Y', strtotime($row['resign_date'])) : 'Working' ?>
 </td>
-
                     <td><?= htmlspecialchars($row['marital_status']) ?></td>
                     <td><?= htmlspecialchars($row['place_of_birth']) ?></td>
                     <td class="current-address" title="<?= htmlspecialchars($row['current_address']) ?>"><?= htmlspecialchars($row['current_address']) ?></td>
