@@ -78,7 +78,14 @@ $top_qty  = $top_product ? $top_product['sold_today'] : 0;
                     <i class="bi bi-basket me-2 text-success"></i> Orders
                 </a>
             </li>
+            <!-- orders_report.php -->
+            <li>
+                <a class="dropdown-item" href="../orders/orders_report.php">
+                    <i class="bi bi-file-earmark-text me-2 text-info"></i> Orders Report
+                </a>
 
+            </li>
+   
         
             <li><hr class="dropdown-divider"></li>
 
@@ -131,7 +138,8 @@ $top_qty  = $top_product ? $top_product['sold_today'] : 0;
 <tr>
     <td><a href="#" class="order-link" data-id="<?= $row['order_id'] ?>">#000<?= $row['order_id'] ?></a></td>
     <td>$<?= number_format($row['total_amount'],2) ?></td>
-    <td><?= date('Y-m-d H:i', strtotime($row['created_at'])) ?></td>
+    <td><?= date('Y-m-d h:i A', strtotime($row['created_at'])) ?></td>
+
 </tr>
 <?php endwhile; else: ?>
 <tr><td colspan="3">No orders found.</td></tr>

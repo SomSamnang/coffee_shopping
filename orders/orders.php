@@ -105,6 +105,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
             <i class="bi bi-clock-history me-2 text-warning"></i> History Orders
         </a>
     </li>
+  <li>
+    <a class="dropdown-item d-flex align-items-center" href="../orders/orders_report.php">
+        <i class="bi bi-clipboard-data me-2 text-info" style="font-size: 1.2rem;"></i>
+        Orders Report
+    </a>
+</li>
+<!-- monthly_orders_report.php -->
+ <li>
+    <a class="dropdown-item d-flex align-items-center" href="../orders/monthly_orders_report.php">
+        <i class="bi bi-bar-chart-line me-2 text-success" style="font-size: 1.2rem;"></i>
+        Monthly Orders Report
+    </a>
+ </li>
+    
+
 
     <!-- Only for Admin -->
     <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
